@@ -7,7 +7,7 @@ open class SQLCurrencyConfig : CurrencyConfig() {
 }
 
 open class CurrencySQLConfig {
-    open var type = "MySQL"
+    open var type = "H2"
     open var hostname = "localhost"
     open var port: Short = 3306
     open var database = "myserver"

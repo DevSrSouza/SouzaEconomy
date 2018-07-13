@@ -7,14 +7,14 @@ import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrency
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 
-open class CachedSQLCurrency(name: String, configuration: CachedSQLCurrencyConfig = CachedSQLCurrencyConfig()) : SQLCurrency(name) {
+open class CachedSQLCurrency<C : CachedSQLCurrencyConfig>(name: String, configuration: C = CachedSQLCurrencyConfig() as C)
+    : SQLCurrency<C>(name, configuration) {
 
     inner class PlayerCache(val player: Player,
                             internal var backupMoney: Long,
                             internal var changedMoney: Long)
 
     open val cache = mutableListOf<PlayerCache>()
-    override val config: CachedSQLCurrencyConfig = configuration
     override val type: String = "CachedSQL(${config.sql.type})"
 
     init {

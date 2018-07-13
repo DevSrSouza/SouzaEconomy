@@ -77,13 +77,21 @@ enum class Databases(val jdbc: String, val driverClass: String, val driverLink: 
                 try {
                     downloadDriver()
                 } catch (e: Exception) {
-                    throw SQLException("Cant download the driver dependencie of $name")
+                    jarFile.delete()
+                    throw SQLException("Cant download the driver dependencie of $name$")
                 }
                 try {
                     loadDriver()
                 }catch (e: Exception) {
                     jarFile.delete()
                     throw SQLException("Cant load the driver dependencies of $name")
+                }
+
+                try {
+                    Class.forName(driverClass)
+                }catch (e: Exception) {
+                    jarFile.delete()
+                    throw SQLException("Cant load the class driver of $name")
                 }
             }
         }
@@ -117,11 +125,11 @@ enum class Databases(val jdbc: String, val driverClass: String, val driverLink: 
         val output = FileOutputStream(jarFile)
 
         val buffer = ByteArray(4096)
-        var n = 0
-        do {
-            n = input.read(buffer)
+        var n = input.read(buffer)
+        while (-1 != n) {
             output.write(buffer, 0, n)
-        } while (-1 != n)
+            n = input.read(buffer)
+        }
 
         input.close()
         output.close()

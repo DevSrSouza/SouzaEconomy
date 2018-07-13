@@ -3,6 +3,8 @@ package br.com.devsrsouza.souzaeconomy
 import br.com.devsrsouza.kotlinbukkitapi.dsl.command.command
 import br.com.devsrsouza.kotlinbukkitapi.dsl.config.loadAndSetDefault
 import br.com.devsrsouza.kotlinbukkitapi.extensions.text.*
+import br.com.devsrsouza.souzaeconomy.currency.Currency
+import br.com.devsrsouza.souzaeconomy.currency.CurrencyConfig
 import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrency
 import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrencyConfig
 import br.com.devsrsouza.souzaeconomy.currency.sql.cached.CachedSQLCurrency
@@ -13,17 +15,18 @@ import org.bukkit.command.Command
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
+import kotlin.reflect.KClass
 
 class SouzaEconomy : JavaPlugin() {
 
     companion object {
-        @JvmStatic internal lateinit var INSTANCE: SouzaEconomy
+        @JvmStatic
+        internal lateinit var INSTANCE: SouzaEconomy
             private set
-        @JvmStatic lateinit var API: SouzaEconomyAPI
+        @JvmStatic
+        lateinit var API: SouzaEconomyAPI
             private set
     }
-
-
 
     lateinit var config: SouzaEconomyConfig
 
@@ -34,9 +37,19 @@ class SouzaEconomy : JavaPlugin() {
 
     override fun onEnable() {
         config = File(dataFolder.apply { mkdirs() }, "config.yml")
-                .apply { if (exists()) createNewFile() }
+                .apply { if (!exists()) createNewFile() }
                 .let { SouzaEconomyConfig(it) }
-                .apply { if(loadAndSetDefault(Config::class) > 0) save() }
+                .apply { if (loadAndSetDefault(Config::class) > 0) save() }
+
+        API.registerCurrencyType<SQLCurrency<SQLCurrencyConfig>, SQLCurrencyConfig>("SQL") {
+            name, config->
+            SQLCurrency(name, config)
+        }
+
+        API.registerCurrencyType<CachedSQLCurrency<CachedSQLCurrencyConfig>, CachedSQLCurrencyConfig>("CachedSQL") {
+            name, config->
+            CachedSQLCurrency(name, config)
+        }
 
         loadCurrencies()
 
@@ -73,7 +86,8 @@ class SouzaEconomy : JavaPlugin() {
                 }
             }
 
-            command("report") { // TODO
+            command("report") {
+                // TODO
                 aliases = listOf("r")
                 permission = ".$name"
                 description = ""
@@ -105,21 +119,22 @@ class SouzaEconomy : JavaPlugin() {
 
     private fun loadCurrencies() {
         Config.currencies.forEach { name, config ->
-            val file = File(dataFolder, "currencies/$name.yml")
-                    .apply { if (exists()) createNewFile() }
-                    .let { SouzaEconomyConfig(it) }
-            if(config.type.equals("SQL", true)) {
-                val currencyConfig = SQLCurrencyConfig()
-                file.apply { if(loadAndSetDefault(SQLCurrencyConfig::class, currencyConfig) > 0) save() }
-                API.registerCurrency(SQLCurrency(name, currencyConfig), config.enable_command)
-            } else if(config.type.equals("CachedSQL", true)){
-                val currencyConfig = CachedSQLCurrencyConfig()
-                file.apply { if(loadAndSetDefault(CachedSQLCurrencyConfig::class, currencyConfig) > 0) save() }
-                API.registerCurrency(CachedSQLCurrency(name, currencyConfig), config.enable_command)
+            val type: CurrencyType<Currency<CurrencyConfig>, CurrencyConfig>? = API.currenciesTypes
+                    .find { it.typeName.equals(config.type, true) }
+            if(type != null) {
+                val file = File(dataFolder, "currencies/$name.yml")
+                        .apply {
+                            parentFile.mkdirs()
+                            if (!exists()) createNewFile()
+                        }
+                        .let { SouzaEconomyConfig(it) }
+                val configurationCurrency: CurrencyConfig = type.currencyConfigClass.constructors.first().call()
+                val currency: Currency<CurrencyConfig> = type.factory(name, configurationCurrency)
+                file.apply { if (loadAndSetDefault(type.currencyConfigClass, configurationCurrency) > 0) save() }
+                API.registerCurrency(currency, config.enable_command)
             }
         }
     }
-
 
 
     override fun onDisable() {}

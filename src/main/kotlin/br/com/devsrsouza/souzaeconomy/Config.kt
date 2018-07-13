@@ -1,17 +1,5 @@
 package br.com.devsrsouza.souzaeconomy
 
-import org.bukkit.configuration.file.YamlConfiguration
-import java.io.File
-
-class SouzaEconomyConfig(val file: File) : YamlConfiguration() {
-
-    init { load(file) }
-
-    fun save() {
-        save(file)
-    }
-}
-
 object Config {
 
     var vault = "money"

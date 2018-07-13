@@ -2,6 +2,7 @@ package br.com.devsrsouza.souzaeconomy.currency
 
 import br.com.devsrsouza.kotlinbukkitapi.dsl.command.KCommand
 import br.com.devsrsouza.kotlinbukkitapi.utils.ExpirationList
+import br.com.devsrsouza.souzaeconomy.SouzaEconomy
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
@@ -10,23 +11,21 @@ import java.util.*
 
 fun Map<UUID, Long>.toOfflinePlayer() = mapKeys { Bukkit.getOfflinePlayer(it.value as UUID) }
 
-interface Currency {
+abstract class Currency<C : CurrencyConfig>(open val name: String, open val config: C) {
 
-    val name: String
-    val type: String
-    val config: CurrencyConfig
+    abstract val type: String
 
-    val cooldown: ExpirationList<Player>
+    open val cooldown: ExpirationList<Player> by lazy { ExpirationList<Player>(SouzaEconomy.INSTANCE) }
 
-    fun getMoney(player: OfflinePlayer): Long
-    fun setMoney(player: OfflinePlayer, amount: Long) : Long
-    fun removeMoney(player: OfflinePlayer, amount: Long): Boolean
-    fun addMoney(player: OfflinePlayer, amount: Long) : Long
-    fun hasAccount(player: OfflinePlayer): Boolean
+    abstract fun getMoney(player: OfflinePlayer): Long
+    abstract fun setMoney(player: OfflinePlayer, amount: Long) : Long
+    abstract fun removeMoney(player: OfflinePlayer, amount: Long): Boolean
+    abstract fun addMoney(player: OfflinePlayer, amount: Long) : Long
+    abstract fun hasAccount(player: OfflinePlayer): Boolean
 
-    fun getTop(range: IntRange = 0..10): Map<UUID, Long>
+    abstract fun getTop(range: IntRange = 0..10): Map<UUID, Long>
 
-    fun commands() : List<KCommand> {
+    open fun commands() : List<KCommand> {
         val checkCooldown = fun(sender: CommandSender): Boolean {
             val cdTime = config.commands.cooldownForExecute
             if(cdTime > 0 && sender is Player) {
@@ -54,7 +53,7 @@ interface Currency {
                         if(amount == null)return@executor; // TODO
 
                         addMoney(target, amount)
-                        sender.sendMessage("Sucess message HERE BITCH") // TODO
+                        sender.sendMessage("Sucess message HERE") // TODO
                     }
                 })
             if (config.commands.set)
@@ -69,7 +68,7 @@ interface Currency {
                         if(amount == null)return@executor; // TODO
 
                         setMoney(target, amount)
-                        sender.sendMessage("Sucess message HERE BITCH") // TODO
+                        sender.sendMessage("Sucess message HERE") // TODO
                     }
                 })
             if (config.commands.remove)
@@ -84,8 +83,8 @@ interface Currency {
                         if(amount == null)return@executor; // TODO
 
                         if(removeMoney(target, amount)) {
-                            sender.sendMessage("Sucess message HERE BITCH") // TODO
-                        } else sender.sendMessage("Fail message HERE BITCH") // TODO
+                            sender.sendMessage("Sucess message HERE") // TODO
+                        } else sender.sendMessage("Fail message HERE") // TODO
 
                     }
                 })
@@ -99,7 +98,7 @@ interface Currency {
                         if(target == null)return@executor; // TODO
 
                         setMoney(target, 0)
-                        sender.sendMessage("Sucess message HERE BITCH") // TODO
+                        sender.sendMessage("Sucess message HERE") // TODO
                     }
                 })
             if (config.commands.pay)
@@ -117,8 +116,10 @@ interface Currency {
 
                         if(removeMoney(sender, amount)) {
                             addMoney(target, amount)
-                            sender.sendMessage("Sucess message HERE BITCH") // TODO
-                        } else sender.sendMessage("Fail message HERE BITCH") // TODO
+                            sender.sendMessage("Sucess message HERE") // TODO
+                            if(target.isOnline)
+                                target.player?.sendMessage("Receibe message HERE") // TODO
+                        } else sender.sendMessage("Fail message HERE") // TODO
                     }
                 })
             if (config.commands.top)

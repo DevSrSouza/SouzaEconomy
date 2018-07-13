@@ -1,12 +1,10 @@
 package br.com.devsrsouza.souzaeconomy.currency.sql
 
-import br.com.devsrsouza.kotlinbukkitapi.utils.ExpirationList
 import br.com.devsrsouza.souzaeconomy.Databases
 import br.com.devsrsouza.souzaeconomy.SouzaEconomy
 import br.com.devsrsouza.souzaeconomy.currency.Currency
 import com.zaxxer.hikari.HikariDataSource
 import org.bukkit.OfflinePlayer
-import org.bukkit.entity.Player
 import java.util.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SchemaUtils.create
@@ -14,8 +12,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.sql.SQLException
 
-@Suppress("IMPLICIT_CAST_TO_ANY")
-open class SQLCurrency(name: String, configuration: SQLCurrencyConfig = SQLCurrencyConfig()) : Currency {
+open class SQLCurrency<C : SQLCurrencyConfig>(name: String, configuration: C = SQLCurrencyConfig() as C)
+    : Currency<C>(name, configuration) {
 
     val database: Database
 
@@ -30,18 +28,15 @@ open class SQLCurrency(name: String, configuration: SQLCurrencyConfig = SQLCurre
         }
     }
 
-    override val name: String = name
-    override val cooldown by lazy { ExpirationList<Player>(SouzaEconomy.INSTANCE) }
-    override val config: SQLCurrencyConfig = configuration
     override val type: String = "SQL(${config.sql.type})"
 
     override fun getMoney(player: OfflinePlayer): Long {
         return getMoneyIfHasAccount(player) ?: 0
     }
 
-    override fun setMoney(player: OfflinePlayer, amount: Long) : Long{
+    override fun setMoney(player: OfflinePlayer, amount: Long): Long {
         transaction(database) {
-            if(hasAccount(player)) {
+            if (hasAccount(player)) {
                 table.update({ table.id.eq(player.uniqueId) }) {
                     it[money] = amount
                     it[playerName] = player.name
@@ -59,7 +54,7 @@ open class SQLCurrency(name: String, configuration: SQLCurrencyConfig = SQLCurre
 
     override fun removeMoney(player: OfflinePlayer, amount: Long): Boolean {
         val moneyGetted = getMoneyIfHasAccount(player)
-        if(moneyGetted != null && moneyGetted >= amount) {
+        if (moneyGetted != null && moneyGetted >= amount) {
             table.update({ table.id.eq(player.uniqueId) }) {
                 it[money] = moneyGetted - amount
                 it[playerName] = player.name
@@ -68,10 +63,10 @@ open class SQLCurrency(name: String, configuration: SQLCurrencyConfig = SQLCurre
         } else return false
     }
 
-    override fun addMoney(player: OfflinePlayer, amount: Long) : Long {
+    override fun addMoney(player: OfflinePlayer, amount: Long): Long {
         val moneyGetted = getMoneyIfHasAccount(player)
         var newMoney: Long = 0
-        if(moneyGetted != null) {
+        if (moneyGetted != null) {
             table.update({ table.id.eq(player.uniqueId) }) {
                 newMoney = moneyGetted + amount
                 it[money] = newMoney
@@ -105,16 +100,21 @@ open class SQLCurrency(name: String, configuration: SQLCurrencyConfig = SQLCurre
         }
     }
 
-    open fun getHikariDataSource() : HikariDataSource {
+    open fun getHikariDataSource(): HikariDataSource {
         val sql = config.sql
         val type = Databases.values().find { it.name.equals(sql.type, true) }
         if (type != null) {
-            if(type.file) {
+            if (type.file) {
                 return type.getDataSource(File(SouzaEconomy.INSTANCE.dataFolder, "database/$name")
-                        .apply { if(type == Databases.SQLite && !exists()) { mkdirs();createNewFile() } }.absolutePath)
+                        .apply {
+                            if (type == Databases.SQLite && !exists()) {
+                                mkdirs()
+                                createNewFile()
+                            }
+                        }.absolutePath)
             } else {
                 return type.getDataSource(sql.hostname, sql.port, sql.database, sql.user, sql.password).also {
-                    if(type == Databases.MySQL || type == Databases.MariaDB) {
+                    if (type == Databases.MySQL || type == Databases.MariaDB) {
                         // TODO add mysql otimization parameters
                     }
                 }

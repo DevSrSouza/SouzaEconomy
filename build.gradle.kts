@@ -2,9 +2,10 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.2.50"
+    kotlin("jvm") version "1.2.51"
     id("maven-publish")
     id("com.github.johnrengelman.shadow") version "2.0.3"
+    id("net.minecrell.plugin-yml.bukkit") version "0.2.1"
 }
 
 group = "br.com.devsrsouza"
@@ -47,4 +48,13 @@ tasks {
         baseName = project.name
         classifier = ""
     }
+}
+
+bukkit {
+    main = "br.com.devsrsouza.souzaeconomy.SouzaEconomy"
+
+    website = "https://github.com/DevSrSouza/SouzaEconomy"
+    authors = listOf("DevSrSouza")
+
+    softDepend = listOf("KotlinBukkitAPI")
 }
