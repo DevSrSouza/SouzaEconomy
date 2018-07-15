@@ -10,7 +10,7 @@ import java.net.*
 import java.sql.SQLException
 
 enum class Databases(val jdbc: String, val driverClass: String, val driverLink: String, val file: Boolean) {
-    H2("jdbc:h2:file:<filepath>.db",
+    H2("jdbc:h2:file:<filepath>",
             "org.h2.Driver",
             "http://repo2.maven.org/maven2/com/h2database/h2/1.4.197/h2-1.4.197.jar",
             true),
@@ -26,7 +26,6 @@ enum class Databases(val jdbc: String, val driverClass: String, val driverLink: 
             "org.mariadb.jdbc.Driver",
             "https://downloads.mariadb.com/Connectors/java/connector-java-2.2.5/mariadb-java-client-2.2.5.jar",
             false),
-    //Oracle("jdbc:oracle:thin:@<hostname>:<port>:orcl", "oracle.jdbc.OracleDriver", ""), // Nao foi possivel achar o link do download do driver // olhar oq é ORCL
     PostgreSQL("jdbc:postgresql://<hostname>:<port>/<database>",
             "org.postgresql.Driver",
             "https://jdbc.postgresql.org/download/postgresql-42.2.2.jre7.jar",
@@ -47,6 +46,9 @@ enum class Databases(val jdbc: String, val driverClass: String, val driverLink: 
         loadDependency()
 
         return HikariDataSource(HikariConfig().apply {
+            driverClassName = driverClass
+            minimumIdle = 1
+            maximumPoolSize = 3
             jdbcUrl = jdbc.replace("<hostname>", hostname).replace("<port>", port.toString()).replace("<database>", database)
             username = user
             this.password = password
@@ -61,6 +63,9 @@ enum class Databases(val jdbc: String, val driverClass: String, val driverLink: 
         loadDependency()
 
         return HikariDataSource(HikariConfig().apply {
+            driverClassName = driverClass
+            minimumIdle = 1
+            maximumPoolSize = 3
             jdbcUrl = jdbc.replace("<filepath>", path)
         })
     }
@@ -86,13 +91,6 @@ enum class Databases(val jdbc: String, val driverClass: String, val driverLink: 
                     jarFile.delete()
                     throw SQLException("Cant load the driver dependencies of $name")
                 }
-
-                try {
-                    Class.forName(driverClass)
-                }catch (e: Exception) {
-                    jarFile.delete()
-                    throw SQLException("Cant load the class driver of $name")
-                }
             }
         }
     }
@@ -115,6 +113,8 @@ enum class Databases(val jdbc: String, val driverClass: String, val driverLink: 
 
             if (!jarFile.canWrite())
                 throw IOException("File '" + jarFile.name + "' cannot be written")
+
+            return
         } else {
             val parent = jarFile.parentFile
             if (parent != null && !parent.exists() && !parent.mkdirs()) {

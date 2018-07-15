@@ -108,8 +108,7 @@ open class SQLCurrency<C : SQLCurrencyConfig>(name: String, configuration: C = S
                 return type.getDataSource(File(SouzaEconomy.INSTANCE.dataFolder, "database/$name")
                         .apply {
                             if (type == Databases.SQLite && !exists()) {
-                                mkdirs()
-                                createNewFile()
+                                parentFile.mkdirs()
                             }
                         }.absolutePath)
             } else {

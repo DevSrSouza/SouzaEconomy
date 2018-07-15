@@ -15,6 +15,7 @@ import org.bukkit.command.Command
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
+import java.lang.Exception
 import kotlin.reflect.KClass
 
 class SouzaEconomy : JavaPlugin() {
@@ -41,12 +42,12 @@ class SouzaEconomy : JavaPlugin() {
                 .let { SouzaEconomyConfig(it) }
                 .apply { if (loadAndSetDefault(Config::class) > 0) save() }
 
-        API.registerCurrencyType<SQLCurrency<SQLCurrencyConfig>, SQLCurrencyConfig>("SQL") {
+        API.registerCurrencyType<SQLCurrency<SQLCurrencyConfig>, SQLCurrencyConfig>("SQL", "Currency based on SQL database") {
             name, config->
             SQLCurrency(name, config)
         }
 
-        API.registerCurrencyType<CachedSQLCurrency<CachedSQLCurrencyConfig>, CachedSQLCurrencyConfig>("CachedSQL") {
+        API.registerCurrencyType<CachedSQLCurrency<CachedSQLCurrencyConfig>, CachedSQLCurrencyConfig>("CachedSQL", "Currency based on SQL database with local cache") {
             name, config->
             CachedSQLCurrency(name, config)
         }
@@ -63,11 +64,15 @@ class SouzaEconomy : JavaPlugin() {
                 permission += ".$name"
 
                 command("create") {
-                    // [name] [type]
+                    // [name] [type] [optional: enable command]
                     // create a base currency and made owner load after
                 }
 
                 command("load") {
+
+                }
+
+                command("typelist") {
 
                 }
 
@@ -87,7 +92,7 @@ class SouzaEconomy : JavaPlugin() {
             }
 
             command("report") {
-                // TODO
+                // TODO /se report [currency name]
                 aliases = listOf("r")
                 permission = ".$name"
                 description = ""
@@ -118,20 +123,34 @@ class SouzaEconomy : JavaPlugin() {
     }
 
     private fun loadCurrencies() {
-        Config.currencies.forEach { name, config ->
-            val type: CurrencyType<Currency<CurrencyConfig>, CurrencyConfig>? = API.currenciesTypes
-                    .find { it.typeName.equals(config.type, true) }
-            if(type != null) {
-                val file = File(dataFolder, "currencies/$name.yml")
-                        .apply {
-                            parentFile.mkdirs()
-                            if (!exists()) createNewFile()
-                        }
-                        .let { SouzaEconomyConfig(it) }
-                val configurationCurrency: CurrencyConfig = type.currencyConfigClass.constructors.first().call()
+        for((name, config) in  Config.currencies.also { println(it) }) {
+            loadCurrency(name, config)
+        }
+    }
+
+    private fun loadCurrency(name: String, config: CurrencyByConfig) {
+        val type: CurrencyType<Currency<CurrencyConfig>, CurrencyConfig>? = API.currenciesTypes
+                .find { it.typeName.equals(config.type, true) }
+        if (type != null) {
+            val file = File(dataFolder, "currencies/$name.yml")
+                    .apply {
+                        parentFile.mkdirs()
+                        if (!exists()) createNewFile()
+                    }
+                    .let { SouzaEconomyConfig(it) }
+            val configurationCurrency = type.currencyConfigClass.constructors.first().call()
+            file.apply {
+                if (loadAndSetDefault(type.currencyConfigClass, configurationCurrency) > 0)
+                    save()
+            }
+            try {
                 val currency: Currency<CurrencyConfig> = type.factory(name, configurationCurrency)
-                file.apply { if (loadAndSetDefault(type.currencyConfigClass, configurationCurrency) > 0) save() }
                 API.registerCurrency(currency, config.enable_command)
+                logger.info("Currency ${currency.name} loaded.")
+            } catch (e: Throwable) {
+                logger.severe("Can't load currency $name.")
+                e.printStackTrace()
+                return
             }
         }
     }
