@@ -10,8 +10,14 @@ class SouzaEconomyConfig(val file: File) : YamlConfiguration() {
 
     init { load(file) }
 
-    fun save() {
+    fun save(): SouzaEconomyConfig {
         save(file)
+        return this
+    }
+
+    fun reload(): SouzaEconomyConfig {
+        load(file)
+        return this
     }
 }
 
