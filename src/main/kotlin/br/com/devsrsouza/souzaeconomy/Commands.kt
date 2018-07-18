@@ -16,17 +16,18 @@ internal fun SouzaEconomy.commands() {
     command("souzaeconomy") {
         aliases = listOf("se")
         permission = "souzaeconomy.cmd"
+        permissionMessage = +CommandMessageConfig.no_permission
         description = "SouzaEconomy configuration command"
 
         command("currency") {
             aliases = listOf("c")
             permission += ".$name"
-            description = ""
+            description = CommandsDescriptionsConfig.currency
 
             command("create") {
                 aliases = listOf("c")
                 permission += ".$name"
-                description = ""
+                description = CommandsDescriptionsConfig.currency_create
                 // create a base currency and made owner load after
                 executor {
                     if (args.size > 1) {
@@ -38,11 +39,11 @@ internal fun SouzaEconomy.commands() {
                         }
 
                         if (name == null) {
-                            sender.sendMessage("Have a currency registred with this name")
+                            sender.sendMessage(+CommandMessageConfig.already_has_currency)
                             return@executor
                         }
                         if (type == null) {
-                            sender.sendMessage("Type not found, use /souzaeconomy currency typelist to list of types")
+                            sender.sendMessage(+CommandMessageConfig.type_not_found)
                             return@executor
                         }
 
@@ -50,7 +51,7 @@ internal fun SouzaEconomy.commands() {
                         val enableCommand = arg2?.toBooleanOrNull()
 
                         if (arg2 != null && enableCommand == null) {
-                            sender.sendMessage("&cEnable command argument need be &4TRUE &cor &4FALSE")
+                            sender.sendMessage(+CommandMessageConfig.enable_command_need_be_boolean)
                             return@executor
                         }
 
@@ -76,8 +77,8 @@ internal fun SouzaEconomy.commands() {
                                 save()
                         }
 
-                        sender.sendMessage("Configs generated on plugins/SouzaEconomy/currencies/$name.yml")
-                        sender.sendMessage("After the configuration, load the currency with /souzaeconomy currency load")
+                        sender.sendMessage(+"&eConfigs generated on &7plugins/SouzaEconomy/currencies/$name.yml&e.")
+                        sender.sendMessage(+"&eAfter the configure on file, load the currency with &7/souzaeconomy currency load&e.")
                     } else {
                         sender.sendMessage("/$label [name] [type] [optional: enable command]")
                     }
@@ -88,7 +89,7 @@ internal fun SouzaEconomy.commands() {
                 // [name]
                 aliases = listOf("l")
                 permission += ".$name"
-                description = ""
+                description = CommandsDescriptionsConfig.currency_load
 
                 executor {
                     val name = args.getOrNull(0)
@@ -98,21 +99,19 @@ internal fun SouzaEconomy.commands() {
                         val config = Config.currencies.findEntry { it.key.equals(name, true) }
 
                         if (config == null) {
-                            sender.sendMessage("Can't found this currency, " +
-                                    "try to create her with /souzaeconomy currency create")
+                            sender.sendMessage(+CommandMessageConfig.load_cant_find_currency)
                             return@executor
                         }
 
                         if (SouzaEconomy.API.currencies.find { it.name.equals(name, true) } != null) {
-                            sender.sendMessage("This currency is already loaded, " +
-                                    "try reloaded with /souzaeconomy currency reload")
+                            sender.sendMessage(+CommandMessageConfig.currency_already_loaded)
                             return@executor
                         }
 
                         if (loadCurrency(config.key, config.value)) {
-                            sender.sendMessage("Currency loaded, have fun :3")
+                            sender.sendMessage(+CommandMessageConfig.currency_loaded)
                         } else {
-                            sender.sendMessage("Is not possible to load the currency :(")
+                            sender.sendMessage(+CommandMessageConfig.problem_on_load_currency)
                         }
 
                     } else {
@@ -125,7 +124,7 @@ internal fun SouzaEconomy.commands() {
                 // [name]
                 aliases = listOf("r")
                 permission += ".$name"
-                description = ""
+                description = CommandsDescriptionsConfig.currency_reload
 
                 executor {
                     val name = args.getOrNull(0)
@@ -135,7 +134,7 @@ internal fun SouzaEconomy.commands() {
                         val configuration = Config.currencies.findEntry { it.key.equals(name, true) }
 
                         if (currency == null) {
-                            sender.sendMessage("Currency not found")
+                            sender.sendMessage(+CommandMessageConfig.reload_cant_find_currency_loaded)
                             return@executor
                         }
 
@@ -147,14 +146,14 @@ internal fun SouzaEconomy.commands() {
                         }
 
                         if (configuration == null) {
-                            sender.sendMessage("Currency unload but is not possible to load again :C")
+                            sender.sendMessage(+CommandMessageConfig.remove_from_config_and_reload)
                             return@executor
                         }
 
                         if (loadCurrency(configuration.key, configuration.value)) {
-                            sender.sendMessage("Currency reloaded, have a good time :3")
+                            sender.sendMessage(+CommandMessageConfig.currency_reloaded)
                         } else {
-                            sender.sendMessage("Is not possible to reload the currency :(")
+                            sender.sendMessage(+CommandMessageConfig.problem_on_reload_currency)
                         }
 
                     } else {
@@ -166,7 +165,7 @@ internal fun SouzaEconomy.commands() {
             command("typelist") {
                 aliases = listOf("tls")
                 permission += ".$name"
-                description = ""
+                description = CommandsDescriptionsConfig.currency_typelist
 
                 executor {
                     sender.sendMessage(+"&8&m------------------------------")
@@ -181,7 +180,7 @@ internal fun SouzaEconomy.commands() {
             command("list") {
                 aliases = listOf("ls")
                 permission += ".$name"
-                description = ""
+                description = CommandsDescriptionsConfig.currency_list
 
                 executor {
                     sender.sendMessage(+"&8&m------------------------------")
@@ -203,10 +202,10 @@ internal fun SouzaEconomy.commands() {
             // TODO /se report [currency name]
             aliases = listOf("r")
             permission = ".$name"
-            description = ""
+            description = CommandsDescriptionsConfig.report
 
             executor {
-                sender.sendMessage("SZ FUTURE FEATURE SZ")
+                sender.sendMessage("SZ WIP SZ")
             }
         }
 
@@ -216,7 +215,7 @@ internal fun SouzaEconomy.commands() {
     }
 }
 
-fun Executor<*>.listSubCommands(subCommands: List<KCommand>, description: String) {
+private fun Executor<*>.listSubCommands(subCommands: List<KCommand>, description: String) {
     val commandsMessage = arrayListOf<Pair<Command, BaseComponent>>().apply {
         for (subCmd in subCommands) {
             add(subCmd to "&b/${label} &e${subCmd.name}"
