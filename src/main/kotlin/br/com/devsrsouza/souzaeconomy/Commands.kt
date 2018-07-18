@@ -28,7 +28,7 @@ internal fun SouzaEconomy.commands() {
                 aliases = listOf("c")
                 permission += ".$name"
                 description = CommandsDescriptionsConfig.currency_create
-                // create a base currency and made owner load after
+
                 executor {
                     if (args.size > 1) {
                         val name = args[0].takeIf { name ->
@@ -121,7 +121,6 @@ internal fun SouzaEconomy.commands() {
             }
 
             command("reload") {
-                // [name]
                 aliases = listOf("r")
                 permission += ".$name"
                 description = CommandsDescriptionsConfig.currency_reload
@@ -199,7 +198,6 @@ internal fun SouzaEconomy.commands() {
         }
 
         command("report") {
-            // TODO /se report [currency name]
             aliases = listOf("r")
             permission = ".$name"
             description = CommandsDescriptionsConfig.report

@@ -127,7 +127,7 @@ open class SQLCurrency<C : SQLCurrencyConfig>(name: String, configuration: C = S
 }
 
 open class SQLCurrencyTable : Table() {
-    val id = uuid("uuid").primaryKey() // Column<String>
+    val id = uuid("uuid").primaryKey() // Column<UUID>
     val playerName = varchar("nickname", length = 26) // Column<String>
     val money = long("money") // Column<Long>
 }

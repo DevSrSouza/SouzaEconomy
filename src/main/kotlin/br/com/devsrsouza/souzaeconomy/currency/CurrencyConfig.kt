@@ -6,10 +6,12 @@ open class CurrencyConfig {
     open var commands = CurrencyCommandsConfig()
     open var messages = CurrencyMessageConfig()
 }
+
 open class CurrencyMessageConfig {
     open var no_permission = +"&cYou don't have permission to use this command."
     open var just_players_can_run_this_command = +"&cThis command can just be runned in game."
 }
+
 open class CurrencyCommandsConfig {
     open var cooldownForExecute = 3
     open var add = true

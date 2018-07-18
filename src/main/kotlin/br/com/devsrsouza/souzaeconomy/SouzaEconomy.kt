@@ -1,19 +1,12 @@
 package br.com.devsrsouza.souzaeconomy
 
-import br.com.devsrsouza.kotlinbukkitapi.dsl.command.command
 import br.com.devsrsouza.kotlinbukkitapi.dsl.config.loadAndSetDefault
-import br.com.devsrsouza.kotlinbukkitapi.dsl.config.saveFrom
-import br.com.devsrsouza.kotlinbukkitapi.extensions.text.*
 import br.com.devsrsouza.souzaeconomy.currency.Currency
 import br.com.devsrsouza.souzaeconomy.currency.CurrencyConfig
 import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrency
 import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrencyConfig
 import br.com.devsrsouza.souzaeconomy.currency.sql.cached.CachedSQLCurrency
 import br.com.devsrsouza.souzaeconomy.currency.sql.cached.CachedSQLCurrencyConfig
-import net.md_5.bungee.api.ChatColor
-import net.md_5.bungee.api.chat.BaseComponent
-import org.bukkit.command.Command
-import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 
@@ -41,13 +34,13 @@ class SouzaEconomy : JavaPlugin() {
                 .let { SouzaEconomyConfig(it) }
                 .apply { if (loadAndSetDefault(Config::class) > 0) save() }
 
-        API.registerCurrencyType<SQLCurrency<SQLCurrencyConfig>, SQLCurrencyConfig>("SQL", "Currency based on SQL database") {
-            name, config->
+        API.registerCurrencyType<SQLCurrency<SQLCurrencyConfig>, SQLCurrencyConfig>("SQL",
+                "Currency based on SQL database") { name, config ->
             SQLCurrency(name, config)
         }
 
-        API.registerCurrencyType<CachedSQLCurrency<CachedSQLCurrencyConfig>, CachedSQLCurrencyConfig>("CachedSQL", "Currency based on SQL database with local cache") {
-            name, config->
+        API.registerCurrencyType<CachedSQLCurrency<CachedSQLCurrencyConfig>, CachedSQLCurrencyConfig>("CachedSQL",
+                "Currency based on SQL database with local cache") { name, config ->
             CachedSQLCurrency(name, config)
         }
 
@@ -57,7 +50,7 @@ class SouzaEconomy : JavaPlugin() {
     }
 
     private fun loadCurrencies() {
-        for((name, config) in  Config.currencies.also { println(it) }) {
+        for ((name, config) in Config.currencies.also { println(it) }) {
             loadCurrency(name, config)
         }
     }

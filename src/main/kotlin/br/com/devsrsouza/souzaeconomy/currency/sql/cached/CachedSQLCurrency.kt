@@ -1,7 +1,6 @@
 package br.com.devsrsouza.souzaeconomy.currency.sql.cached
 
 import br.com.devsrsouza.kotlinbukkitapi.dsl.scheduler.task
-import br.com.devsrsouza.kotlinbukkitapi.dsl.scheduler.taskAsync
 import br.com.devsrsouza.souzaeconomy.SouzaEconomy
 import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrency
 import org.bukkit.OfflinePlayer
@@ -37,7 +36,7 @@ open class CachedSQLCurrency<C : CachedSQLCurrencyConfig>(name: String, configur
 
     override fun getMoney(player: OfflinePlayer): Long {
         val online = player.player
-        if(online != null) {
+        if (online != null) {
             return cache.find { it.player.name.equals(online.name) }?.changedMoney ?: kotlin.run {
                 super.getMoney(player).also {
                     cache.add(PlayerCache(online, it, it))
@@ -47,9 +46,9 @@ open class CachedSQLCurrency<C : CachedSQLCurrencyConfig>(name: String, configur
         return super.getMoney(player)
     }
 
-    override fun setMoney(player: OfflinePlayer, amount: Long) : Long {
+    override fun setMoney(player: OfflinePlayer, amount: Long): Long {
         val online = player.player
-        if(online != null) {
+        if (online != null) {
             getMoney(player)
             return (cache.find { it.player.name.equals(online.name) } ?: kotlin.run {
                 super.getMoney(player).let {
@@ -62,14 +61,14 @@ open class CachedSQLCurrency<C : CachedSQLCurrencyConfig>(name: String, configur
 
     override fun removeMoney(player: OfflinePlayer, amount: Long): Boolean {
         val online = player.player
-        if(online != null) {
+        if (online != null) {
             getMoney(player)
             val cache = cache.find { it.player.name.equals(online.name) } ?: kotlin.run {
                 super.getMoney(player).let {
                     PlayerCache(online, it, it).also { cache.add(it) }
                 }
             }
-            if(cache.changedMoney - amount >= 0) {
+            if (cache.changedMoney - amount >= 0) {
                 cache.changedMoney -= amount
                 return true
             } else return false
@@ -77,9 +76,9 @@ open class CachedSQLCurrency<C : CachedSQLCurrencyConfig>(name: String, configur
         return super.removeMoney(player, amount)
     }
 
-    override fun addMoney(player: OfflinePlayer, amount: Long) : Long {
+    override fun addMoney(player: OfflinePlayer, amount: Long): Long {
         val online = player.player
-        if(online != null) {
+        if (online != null) {
             getMoney(player)
             return (cache.find { it.player.name.equals(online.name) } ?: kotlin.run {
                 super.getMoney(player).let {

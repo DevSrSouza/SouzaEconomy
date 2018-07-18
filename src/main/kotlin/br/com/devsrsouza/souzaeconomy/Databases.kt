@@ -39,9 +39,9 @@ enum class Databases(val jdbc: String, val driverClass: String, val driverLink: 
     private val jarFile = File(SouzaEconomy.INSTANCE.dataFolder, ".libs/$jarName")
 
     @Throws(SQLException::class)
-    fun getDataSource(hostname: String, port: Short, database: String, user: String, password: String) : HikariDataSource {
+    fun getDataSource(hostname: String, port: Short, database: String, user: String, password: String): HikariDataSource {
 
-        if(file) throw SQLException("The database $name is a file type database")
+        if (file) throw SQLException("The database $name is a file type database")
 
         loadDependency()
 
@@ -56,9 +56,9 @@ enum class Databases(val jdbc: String, val driverClass: String, val driverLink: 
     }
 
     @Throws(SQLException::class)
-    fun getDataSource(path: String) : HikariDataSource {
+    fun getDataSource(path: String): HikariDataSource {
 
-        if(!file) throw SQLException("The database $name is not a file type database")
+        if (!file) throw SQLException("The database $name is not a file type database")
 
         loadDependency()
 
@@ -75,8 +75,8 @@ enum class Databases(val jdbc: String, val driverClass: String, val driverLink: 
 
         try {
             Class.forName(driverClass)
-        }catch (e: ClassNotFoundException) {
-            if(jarFile.exists())  {
+        } catch (e: ClassNotFoundException) {
+            if (jarFile.exists()) {
                 loadDriver()
             } else {
                 try {
@@ -87,7 +87,7 @@ enum class Databases(val jdbc: String, val driverClass: String, val driverLink: 
                 }
                 try {
                     loadDriver()
-                }catch (e: Exception) {
+                } catch (e: Exception) {
                     jarFile.delete()
                     throw SQLException("Cant load the driver dependencies of $name")
                 }

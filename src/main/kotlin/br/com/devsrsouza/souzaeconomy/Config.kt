@@ -1,7 +1,5 @@
 package br.com.devsrsouza.souzaeconomy
 
-import br.com.devsrsouza.kotlinbukkitapi.extensions.text.unaryMinus
-
 object Config {
 
     var vault = "money"

@@ -15,13 +15,13 @@ class SouzaEconomyAPI {
     internal val currencies: MutableList<Currency<out CurrencyConfig>> = mutableListOf()
     internal val currenciesTypes: MutableList<CurrencyType<Currency<CurrencyConfig>, CurrencyConfig>> = mutableListOf()
 
-    fun registerCurrency(currency: Currency<CurrencyConfig>, registerCommand: Boolean) : Boolean {
-        if(currencies.find { it.name.equals(currency.name, true) } != null)
+    fun registerCurrency(currency: Currency<CurrencyConfig>, registerCommand: Boolean): Boolean {
+        if (currencies.find { it.name.equals(currency.name, true) } != null)
             return false
 
         currencies.add(currency)
 
-        if(registerCommand)
+        if (registerCommand)
             command(currency.name) {
 
                 permission = "souzaeconomy.currency.$name.cmd"
@@ -54,7 +54,7 @@ class SouzaEconomyAPI {
         return true
     }
 
-    fun getCurrency(name: String) : Currency<out CurrencyConfig>? {
+    fun getCurrency(name: String): Currency<out CurrencyConfig>? {
         return currencies.find { it.name.equals(name, true) }
     }
 
