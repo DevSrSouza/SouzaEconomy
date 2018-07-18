@@ -13,8 +13,6 @@ fun Map<UUID, Long>.toOfflinePlayer() = mapKeys { Bukkit.getOfflinePlayer(it.val
 
 abstract class Currency<C : CurrencyConfig>(open val name: String, open val config: C) {
 
-    abstract val type: String
-
     open val cooldown: ExpirationList<Player> by lazy { ExpirationList<Player>(SouzaEconomy.INSTANCE) }
 
     abstract fun getMoney(player: OfflinePlayer): Long
@@ -24,6 +22,8 @@ abstract class Currency<C : CurrencyConfig>(open val name: String, open val conf
     abstract fun hasAccount(player: OfflinePlayer): Boolean
 
     abstract fun getTop(range: IntRange = 0..10): Map<UUID, Long>
+
+    abstract fun onDisable()
 
     open fun commands() : List<KCommand> {
         val checkCooldown = fun(sender: CommandSender): Boolean {

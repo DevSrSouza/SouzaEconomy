@@ -71,7 +71,9 @@ class SouzaEconomyAPI {
             type: KClass<T>,
             configType: KClass<C>,
             factory: (currencyName: String, config: C) -> T): Boolean {
-        if (currenciesTypes.find { it.typeName.equals(typeName, true) } == null) {
+        if (currenciesTypes.find {
+                    it.typeName.equals(typeName, true) || it.currencyClass == type
+                } == null) {
             currenciesTypes.add(CurrencyType(typeName, description, type, configType, factory) as CurrencyType<Currency<CurrencyConfig>, CurrencyConfig>)
             return true
         } else return false

@@ -6,6 +6,8 @@ import br.com.devsrsouza.souzaeconomy.SouzaEconomy
 import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrency
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
+import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.scheduler.BukkitTask
 
 open class CachedSQLCurrency<C : CachedSQLCurrencyConfig>(name: String, configuration: C = CachedSQLCurrencyConfig() as C)
     : SQLCurrency<C>(name, configuration) {
@@ -15,19 +17,21 @@ open class CachedSQLCurrency<C : CachedSQLCurrencyConfig>(name: String, configur
                             internal var changedMoney: Long)
 
     open val cache = mutableListOf<PlayerCache>()
-    override val type: String = "CachedSQL(${config.sql.type})"
+
+    private val task: BukkitTask
+    private val syncBlock: BukkitRunnable.(Boolean) -> Unit = { async ->
+        cache.removeAll {
+            if (it.backupMoney != it.changedMoney) {
+                task(0, async = async) { super.setMoney(it.player, it.changedMoney) }
+                it.backupMoney = it.changedMoney
+            }
+            !it.player.isOnline
+        }
+    }
 
     init {
-
-        // TODO FAZER ASYNC
-        task(config.cache.update_delay, plugin = SouzaEconomy.INSTANCE) {
-            cache.removeAll {
-                if(it.backupMoney != it.changedMoney) {
-                    taskAsync { super.setMoney(it.player, it.changedMoney) }
-                    it.backupMoney = it.changedMoney
-                }
-                !it.player.isOnline
-            }
+        task = task(repeatDelay = config.cache.update_delay, plugin = SouzaEconomy.INSTANCE) {
+            syncBlock(true)
         }
     }
 
@@ -86,12 +90,12 @@ open class CachedSQLCurrency<C : CachedSQLCurrencyConfig>(name: String, configur
         return super.addMoney(player, amount)
     }
 
-    override fun hasAccount(player: OfflinePlayer): Boolean {
-        return super.hasAccount(player)
-    }
-
-    override fun getMoneyIfHasAccount(player: OfflinePlayer): Long? {
-        return super.getMoneyIfHasAccount(player)
+    override fun onDisable() {
+        task.cancel()
+        task(plugin = SouzaEconomy.INSTANCE) {
+            syncBlock(false)
+        }
+        super.onDisable()
     }
 }
 

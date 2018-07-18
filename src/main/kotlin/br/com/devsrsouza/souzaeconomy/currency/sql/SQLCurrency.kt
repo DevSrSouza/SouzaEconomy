@@ -16,19 +16,19 @@ open class SQLCurrency<C : SQLCurrencyConfig>(name: String, configuration: C = S
     : Currency<C>(name, configuration) {
 
     val database: Database
+    val dataSource: HikariDataSource
 
     open val table = SQLCurrencyTable()
 
     init {
 
-        database = Database.connect(getHikariDataSource())
+        dataSource = getHikariDataSource()
+        database = Database.connect(dataSource)
 
         transaction(database) {
             create(table)
         }
     }
-
-    override val type: String = "SQL(${config.sql.type})"
 
     override fun getMoney(player: OfflinePlayer): Long {
         return getMoneyIfHasAccount(player) ?: 0
@@ -119,6 +119,10 @@ open class SQLCurrency<C : SQLCurrencyConfig>(name: String, configuration: C = S
                 }
             }
         } else throw SQLException("SQL type not finded or supported.")
+    }
+
+    override fun onDisable() {
+        dataSource.close()
     }
 }
 
