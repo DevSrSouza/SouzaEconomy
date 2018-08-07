@@ -7,6 +7,7 @@ import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrency
 import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrencyConfig
 import br.com.devsrsouza.souzaeconomy.currency.sql.cached.CachedSQLCurrency
 import br.com.devsrsouza.souzaeconomy.currency.sql.cached.CachedSQLCurrencyConfig
+import br.com.devsrsouza.souzaeconomy.events.AfterLoadDefaultTypesEvent
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 
@@ -34,6 +35,9 @@ class SouzaEconomy : JavaPlugin() {
                 .let { SouzaEconomyConfig(it) }
                 .apply { if (loadAndSetDefault(Config::class) > 0) save() }
 
+        /**
+         * loading default types
+         */
         API.registerCurrencyType<SQLCurrency<SQLCurrencyConfig>, SQLCurrencyConfig>("SQL",
                 "Currency based on SQL database") { name, config ->
             SQLCurrency(name, config)
@@ -43,6 +47,8 @@ class SouzaEconomy : JavaPlugin() {
                 "Currency based on SQL database with local cache") { name, config ->
             CachedSQLCurrency(name, config)
         }
+
+        server.pluginManager.callEvent(AfterLoadDefaultTypesEvent(API))
 
         loadCurrencies()
 
