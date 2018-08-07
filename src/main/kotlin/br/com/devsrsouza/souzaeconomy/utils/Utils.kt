@@ -1,4 +1,4 @@
-package br.com.devsrsouza.souzaeconomy
+package br.com.devsrsouza.souzaeconomy.utils
 
 fun String.toBooleanOrNull(): Boolean? {
     return when {

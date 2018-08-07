@@ -1,5 +1,6 @@
-package br.com.devsrsouza.souzaeconomy
+package br.com.devsrsouza.souzaeconomy.utils
 
+import br.com.devsrsouza.souzaeconomy.SouzaEconomy
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.HikariConfig
 import java.io.File
