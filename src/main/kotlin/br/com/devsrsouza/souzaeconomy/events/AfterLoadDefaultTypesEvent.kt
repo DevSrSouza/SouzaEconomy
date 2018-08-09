@@ -10,5 +10,5 @@ class AfterLoadDefaultTypesEvent(val api: SouzaEconomyAPI) : Event() {
         @JvmField val handlers = HandlerList()
     }
 
-    override fun getHandlers(): HandlerList = handlers
+    override fun getHandlers(): HandlerList = AfterLoadDefaultTypesEvent.handlers
 }
