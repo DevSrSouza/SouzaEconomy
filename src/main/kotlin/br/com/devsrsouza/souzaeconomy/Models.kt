@@ -2,6 +2,7 @@ package br.com.devsrsouza.souzaeconomy
 
 import br.com.devsrsouza.souzaeconomy.currency.Currency
 import br.com.devsrsouza.souzaeconomy.currency.CurrencyConfig
+import org.bukkit.OfflinePlayer
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 import kotlin.reflect.KClass
@@ -28,3 +29,21 @@ class CurrencyType<T : Currency<C>, C : CurrencyConfig>(
         val currencyConfigClass: KClass<C>,
         val factory: (currencyName: String, config: C) -> T
 )
+
+class Transaction(val amount: Long, val currency: Currency<*>) {
+
+    fun pay(payer: OfflinePlayer, receiver: OfflinePlayer): Boolean {
+        if (remove(payer)) {
+            add(receiver)
+            return true
+        } else return false
+    }
+
+    fun remove(player: OfflinePlayer): Boolean {
+        return currency.removeMoney(player, amount)
+    }
+
+    fun add(player: OfflinePlayer): Long {
+        return currency.addMoney(player, amount)
+    }
+}

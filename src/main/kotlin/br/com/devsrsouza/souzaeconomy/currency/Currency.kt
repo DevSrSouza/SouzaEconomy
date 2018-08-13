@@ -3,6 +3,7 @@ package br.com.devsrsouza.souzaeconomy.currency
 import br.com.devsrsouza.kotlinbukkitapi.dsl.command.KCommand
 import br.com.devsrsouza.kotlinbukkitapi.utils.ExpirationList
 import br.com.devsrsouza.souzaeconomy.SouzaEconomy
+import br.com.devsrsouza.souzaeconomy.Transaction
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
@@ -24,6 +25,8 @@ abstract class Currency<C : CurrencyConfig>(open val name: String, open val conf
     abstract fun getTop(range: IntRange = 0..10): Map<UUID, Long>
 
     abstract fun onDisable()
+
+    fun transaction(amount: Long) = Transaction(amount, this)
 
     open fun commands(): List<KCommand> {
         val checkCooldown = fun(sender: CommandSender): Boolean {
