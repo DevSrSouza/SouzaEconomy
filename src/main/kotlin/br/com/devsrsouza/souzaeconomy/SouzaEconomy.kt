@@ -56,7 +56,7 @@ class SouzaEconomy : JavaPlugin() {
     }
 
     private fun loadCurrencies() {
-        for ((name, config) in Config.currencies.also { println(it) }) {
+        for ((name, config) in Config.currencies) {
             loadCurrency(name, config)
         }
     }
