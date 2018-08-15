@@ -46,4 +46,8 @@ class Transaction(val amount: Long, val currency: Currency<*>) {
     fun add(player: OfflinePlayer): Long {
         return currency.addMoney(player, amount)
     }
+
+    fun has(player: OfflinePlayer) : Boolean {
+        return currency.getMoney(player) >= amount
+    }
 }
