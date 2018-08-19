@@ -1,6 +1,6 @@
 package br.com.devsrsouza.souzaeconomy.currency.sql
 
-import br.com.devsrsouza.souzaeconomy.Databases
+import br.com.devsrsouza.souzaeconomy.utils.Databases
 import br.com.devsrsouza.souzaeconomy.SouzaEconomy
 import br.com.devsrsouza.souzaeconomy.currency.Currency
 import com.zaxxer.hikari.HikariDataSource

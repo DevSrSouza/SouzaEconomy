@@ -10,6 +10,8 @@ open class CurrencyConfig {
 open class CurrencyMessageConfig {
     open var no_permission = +"&cYou don't have permission to use this command."
     open var just_players_can_run_this_command = +"&cThis command can just be runned in game."
+    open var show_player_balance = +"&eYour money is &a{balance}&e."
+    open var viewing_player_balance = +"&eThe player has &a{balance}&e of money."
 }
 
 open class CurrencyCommandsConfig {

@@ -1,12 +1,16 @@
 package br.com.devsrsouza.souzaeconomy
 
+import br.com.devsrsouza.kotlinbukkitapi.dsl.command.Executor
 import br.com.devsrsouza.kotlinbukkitapi.dsl.command.command
 import br.com.devsrsouza.kotlinbukkitapi.extensions.text.*
 import br.com.devsrsouza.souzaeconomy.currency.Currency
 import br.com.devsrsouza.souzaeconomy.currency.CurrencyConfig
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.BaseComponent
+import org.bukkit.Bukkit
+import org.bukkit.OfflinePlayer
 import org.bukkit.command.Command
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import kotlin.reflect.KClass
 
@@ -28,7 +32,21 @@ class SouzaEconomyAPI {
 
                 subCommands.addAll(currency.commands())
 
-                executor {
+                val view = fun(sender: CommandSender, player: OfflinePlayer?) {
+                    sender.sendMessage(currency.config.messages.viewing_player_balance
+                            .replace("{balance}", (player?.let { currency.getMoney(it) } ?: 0).toString(), true))
+                }
+
+                executorPlayer {
+                    if (args.isNotEmpty())
+                        view(sender, Bukkit.getOfflinePlayer(args[0]))
+                    else
+                        sender.sendMessage(currency.config.messages.show_player_balance
+                                .replace("{balance}", currency.getMoney(sender).toString(), true))
+
+                }
+
+                val help = fun(executor: Executor<*>) {
                     val commandsMessage = arrayListOf<Pair<Command, BaseComponent>>().apply {
                         for (subCmd in subCommands) {
                             add(subCmd to "&b/${label} &e${subCmd.name}"
@@ -36,18 +54,31 @@ class SouzaEconomyAPI {
                                     .suggestCommand("/${label} ${subCmd.name}"))
                         }
                     }
-                    sender.sendMessage(+"&8&m-----------------------------")
-                    sender.sendMessage(+"&bSouzaEconomy-> &6Commands")
-                    if (sender is Player) {
+                    executor.sender.sendMessage(+"&8&m-----------------------------")
+                    executor.sender.sendMessage(+"&bSouzaEconomy[${currency.name}]-> &6Commands")
+                    if (executor.sender is Player) {
                         for (message in commandsMessage) {
-                            (sender as Player).sendMessage(message.second.replaceAll("&", "§"))
+                            (executor.sender as Player).sendMessage(message.second.replaceAll("&", "§"))
                         }
                     } else {
                         for (message in commandsMessage) {
-                            sender.sendMessage(+(message.second.toLegacyText() + "&b - ${message.first.description}"))
+                            executor.sender.sendMessage(+(message.second.toLegacyText() + "&b - ${message.first.description}"))
                         }
                     }
-                    sender.sendMessage(+"&8&m------------------------------")
+                    executor.sender.sendMessage(+"&8&m------------------------------")
+                }
+
+                executor {
+                    if (args.isNotEmpty())
+                        view(sender, Bukkit.getOfflinePlayer(args[0]))
+                    else
+                        executor { help(this) }
+                }
+
+                command("help") {
+                    aliases = listOf("ajuda")
+
+                    executor { help(this) }
                 }
             }
 
