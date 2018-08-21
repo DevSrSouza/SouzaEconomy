@@ -5,6 +5,7 @@ import br.com.devsrsouza.kotlinbukkitapi.dsl.command.command
 import br.com.devsrsouza.kotlinbukkitapi.extensions.text.*
 import br.com.devsrsouza.souzaeconomy.currency.Currency
 import br.com.devsrsouza.souzaeconomy.currency.CurrencyConfig
+import br.com.devsrsouza.souzaeconomy.events.PreLoadCurrencyEvent
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.BaseComponent
 import org.bukkit.Bukkit
@@ -20,6 +21,13 @@ class SouzaEconomyAPI {
     internal val currenciesTypes: MutableList<CurrencyType<Currency<CurrencyConfig>, CurrencyConfig>> = mutableListOf()
 
     fun registerCurrency(currency: Currency<CurrencyConfig>, registerCommand: Boolean): Boolean {
+
+        val event = PreLoadCurrencyEvent(currency, registerCommand)
+                .also { SouzaEconomy.INSTANCE.server.pluginManager.callEvent(it) }
+
+        val currency = event.currency
+        val registerCommand = event.registerCommand
+
         if (currencies.find { it.name.equals(currency.name, true) } != null)
             return false
 

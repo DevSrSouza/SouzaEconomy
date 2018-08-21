@@ -7,7 +7,8 @@ import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrency
 import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrencyConfig
 import br.com.devsrsouza.souzaeconomy.currency.sql.cached.CachedSQLCurrency
 import br.com.devsrsouza.souzaeconomy.currency.sql.cached.CachedSQLCurrencyConfig
-import br.com.devsrsouza.souzaeconomy.events.AfterLoadDefaultTypesEvent
+import br.com.devsrsouza.souzaeconomy.events.PosLoadDefaultTypesEvent
+import org.bukkit.ChatColor
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 
@@ -48,7 +49,7 @@ class SouzaEconomy : JavaPlugin() {
             CachedSQLCurrency(name, config)
         }
 
-        server.pluginManager.callEvent(AfterLoadDefaultTypesEvent(API))
+        server.pluginManager.callEvent(PosLoadDefaultTypesEvent(API))
 
         loadCurrencies()
 
