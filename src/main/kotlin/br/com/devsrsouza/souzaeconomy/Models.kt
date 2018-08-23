@@ -50,4 +50,10 @@ class Transaction(val amount: Long, val currency: Currency<*>) {
     fun has(player: OfflinePlayer) : Boolean {
         return currency.getMoney(player) >= amount
     }
+
+    operator fun times(x: Int) = Transaction(amount * x, currency)
+
+    operator fun plus(x: Int) = Transaction(amount + x, currency)
+
+    fun revenue(percent: Int) = Transaction(amount * ((percent.toDouble() * 0.01) + 1).toLong(), currency)
 }
