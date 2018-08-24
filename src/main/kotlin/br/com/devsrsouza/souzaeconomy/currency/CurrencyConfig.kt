@@ -3,6 +3,7 @@ package br.com.devsrsouza.souzaeconomy.currency
 import br.com.devsrsouza.kotlinbukkitapi.extensions.text.unaryPlus
 
 open class CurrencyConfig {
+    open var displayname = "Currency"
     open var commands = CurrencyCommandsConfig()
     open var messages = CurrencyMessageConfig()
 }

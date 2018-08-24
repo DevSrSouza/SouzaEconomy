@@ -63,7 +63,7 @@ class SouzaEconomyAPI {
                         }
                     }
                     executor.sender.sendMessage(+"&8&m-----------------------------")
-                    executor.sender.sendMessage(+"&bSouzaEconomy[${currency.name}]-> &6Commands")
+                    executor.sender.sendMessage(+"&b${currency.config.displayname}-> &6Commands")
                     if (executor.sender is Player) {
                         for (message in commandsMessage) {
                             (executor.sender as Player).sendMessage(message.second.replaceAll("&", "§"))

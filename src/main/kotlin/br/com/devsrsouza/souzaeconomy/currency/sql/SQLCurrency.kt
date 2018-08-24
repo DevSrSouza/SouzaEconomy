@@ -18,7 +18,7 @@ open class SQLCurrency<C : SQLCurrencyConfig>(name: String, configuration: C = S
     val database: Database
     val dataSource: HikariDataSource
 
-    open val table = SQLCurrencyTable()
+    open val table = SQLCurrencyTable("se_$name")
 
     init {
 
@@ -126,7 +126,7 @@ open class SQLCurrency<C : SQLCurrencyConfig>(name: String, configuration: C = S
     }
 }
 
-open class SQLCurrencyTable : Table() {
+open class SQLCurrencyTable(name: String) : Table(name) {
     val id = uuid("uuid").primaryKey() // Column<UUID>
     val playerName = varchar("nickname", length = 26) // Column<String>
     val money = long("money") // Column<Long>
