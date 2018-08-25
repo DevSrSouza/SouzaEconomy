@@ -2,14 +2,15 @@ package br.com.devsrsouza.souzaeconomy.currency.sql.cached
 
 import br.com.devsrsouza.kotlinbukkitapi.dsl.scheduler.task
 import br.com.devsrsouza.souzaeconomy.SouzaEconomy
+import br.com.devsrsouza.souzaeconomy.currency.sql.SQLController
 import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrency
+import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrencyConfig
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 
-open class CachedSQLCurrency<C : CachedSQLCurrencyConfig>(name: String, configuration: C = CachedSQLCurrencyConfig() as C)
-    : SQLCurrency<C>(name, configuration) {
+open class CachedSQLCurrency<C : CachedSQLCurrencyConfig> : SQLCurrency<C> {
 
     inner class PlayerCache(val player: Player,
                             internal var backupMoney: Long,
@@ -27,6 +28,12 @@ open class CachedSQLCurrency<C : CachedSQLCurrencyConfig>(name: String, configur
             !it.player.isOnline
         }
     }
+
+    constructor(name: String, configuration: C = CachedSQLCurrencyConfig() as C)
+            : super(name, configuration)
+
+    constructor(name: String, configuration: C = SQLCurrencyConfig() as C, controller: SQLController)
+            : super(name, configuration, controller)
 
     init {
         task = task(repeatDelay = config.cache.update_delay, plugin = SouzaEconomy.INSTANCE) {
