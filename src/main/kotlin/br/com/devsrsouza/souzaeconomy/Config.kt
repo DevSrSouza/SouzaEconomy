@@ -5,8 +5,8 @@ object Config {
     var vault = "money"
 
     var currencies: MutableMap<String, CurrencyByConfig> = mutableMapOf(
-            "Money" to CurrencyByConfig().apply { type = "CachedSQL" },
-            "Cash" to CurrencyByConfig()
+            "money" to CurrencyByConfig().apply { type = "CachedSQL" },
+            "cash" to CurrencyByConfig()
     )
 
     var messages = MessagesConfig

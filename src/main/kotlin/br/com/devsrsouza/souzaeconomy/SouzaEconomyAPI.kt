@@ -20,7 +20,7 @@ class SouzaEconomyAPI {
     internal val currencies: MutableList<Currency<out CurrencyConfig>> = mutableListOf()
     internal val currenciesTypes: MutableList<CurrencyType<Currency<CurrencyConfig>, CurrencyConfig>> = mutableListOf()
 
-    fun registerCurrency(currency: Currency<CurrencyConfig>, registerCommand: Boolean): Boolean {
+    fun registerCurrency(currency: Currency<*>, registerCommand: Boolean): Boolean {
 
         val event = PreLoadCurrencyEvent(currency, registerCommand)
                 .also { SouzaEconomy.INSTANCE.server.pluginManager.callEvent(it) }
