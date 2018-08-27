@@ -19,7 +19,7 @@ open class CachedSQLCurrency<C : CachedSQLCurrencyConfig> : SQLCurrency<C> {
     open val cache = mutableListOf<PlayerCache>()
 
     private val task: BukkitTask
-    private val syncBlock: BukkitRunnable.(Boolean) -> Unit = { async ->
+    private val syncBlock: (Boolean) -> Unit = { async ->
         cache.removeAll {
             if (it.backupMoney != it.changedMoney) {
                 task(0, async = async) { super.setMoney(it.player, it.changedMoney) }
@@ -98,9 +98,7 @@ open class CachedSQLCurrency<C : CachedSQLCurrencyConfig> : SQLCurrency<C> {
 
     override fun onDisable() {
         task.cancel()
-        task(plugin = SouzaEconomy.INSTANCE) {
-            syncBlock(false)
-        }
+        syncBlock(false)
         super.onDisable()
     }
 }
