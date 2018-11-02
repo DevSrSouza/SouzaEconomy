@@ -10,9 +10,6 @@ import br.com.devsrsouza.souzaeconomy.currency.sql.cached.CachedSQLCurrencyConfi
 import br.com.devsrsouza.souzaeconomy.events.PosLoadDefaultTypesEvent
 import org.bukkit.ChatColor
 import org.bukkit.plugin.java.JavaPlugin
-import org.joda.time.DateTime
-import org.joda.time.LocalDate
-import org.joda.time.Years
 import java.io.File
 
 class SouzaEconomy : JavaPlugin() {

@@ -171,7 +171,7 @@ internal fun SouzaEconomy.commands() {
                     sender.sendMessage(+"&8&m------------------------------")
                     sender.sendMessage(+"&bSouzaEconomy-> &6Types")
                     for (type in SouzaEconomy.API.currenciesTypes) {
-                        sender.sendMessage("&b${type.typeName}: &e${type.description}")
+                        sender.sendMessage(+"&b${type.typeName}: &e${type.description}")
                     }
                     sender.sendMessage(+"&8&m------------------------------")
                 }
@@ -187,7 +187,7 @@ internal fun SouzaEconomy.commands() {
                     sender.sendMessage(+"&bSouzaEconomy-> &6Currencies")
                     for (currency in SouzaEconomy.API.currencies) {
                         val type = SouzaEconomy.API.currenciesTypes.find { it.currencyClass == currency::class }
-                        sender.sendMessage("&b${currency.name} &7${type?.typeName ?: ""}")
+                        sender.sendMessage(+"&b${currency.name} &7${type?.typeName ?: ""}")
                     }
                     sender.sendMessage(+"&8&m------------------------------")
                 }
