@@ -2,6 +2,7 @@ package br.com.devsrsouza.souzaeconomy
 
 import br.com.devsrsouza.souzaeconomy.currency.Currency
 import br.com.devsrsouza.souzaeconomy.currency.CurrencyConfig
+import br.com.devsrsouza.souzaeconomy.currency.ICurrency
 import org.bukkit.OfflinePlayer
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
@@ -30,7 +31,7 @@ class CurrencyType<T : Currency<C>, C : CurrencyConfig>(
         val factory: (currencyName: String, config: C) -> T
 )
 
-class Transaction(val amount: Long, val currency: Currency<*>) {
+class Transaction(val amount: Long, val currency: ICurrency<*>) {
 
     fun pay(payer: OfflinePlayer, receiver: OfflinePlayer): Boolean {
         if (remove(payer)) {
