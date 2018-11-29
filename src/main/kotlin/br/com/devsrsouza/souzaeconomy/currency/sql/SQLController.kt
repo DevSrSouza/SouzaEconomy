@@ -68,13 +68,14 @@ class SQLControllerRegistry(private val controller: SQLController, val column: C
             if (getMoneyIfHasAccount(player) != null) {
                 table.update({ table.id.eq(player.uniqueId) }) {
                     it[column] = amount
-                    it[playerName] = player.name
+                    if(player.name != null)
+                        it[playerName] = player.name
                 }
             } else {
                 table.insert {
                     it[id] = player.uniqueId
                     it[column] = amount
-                    it[playerName] = player.name
+                    it[playerName] = player.name ?: "unknown name"
                 }
             }
         }
@@ -87,7 +88,8 @@ class SQLControllerRegistry(private val controller: SQLController, val column: C
             if (moneyGetted != null && moneyGetted >= amount) {
                 table.update({ table.id.eq(player.uniqueId) }) {
                     it[column] = moneyGetted - amount
-                    it[playerName] = player.name
+                    if(player.name != null)
+                        it[playerName] = player.name
                 }
                 return@transaction true
             } else return@transaction false
@@ -102,14 +104,15 @@ class SQLControllerRegistry(private val controller: SQLController, val column: C
                 table.update({ table.id.eq(player.uniqueId) }) {
                     newMoney = moneyGetted + amount
                     it[column] = newMoney
-                    it[playerName] = player.name
+                    if(player.name != null)
+                        it[playerName] = player.name
                 }
             } else {
                 table.insert {
                     newMoney = amount
                     it[id] = player.uniqueId
                     it[column] = newMoney
-                    it[playerName] = player.name
+                    it[playerName] = player.name ?: "unknown name"
                 }
             }
             return@transaction newMoney
