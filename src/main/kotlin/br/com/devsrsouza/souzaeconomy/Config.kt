@@ -2,7 +2,7 @@ package br.com.devsrsouza.souzaeconomy
 
 object Config {
 
-    var vault = "money"
+    var vault = VaultConfig
 
     var currencies: MutableMap<String, CurrencyByConfig> = mutableMapOf(
             "money" to CurrencyByConfig().apply { type = "CachedSQL" },
@@ -11,6 +11,13 @@ object Config {
 
     var messages = MessagesConfig
     var commands_descriptions = CommandsDescriptionsConfig
+}
+
+object VaultConfig {
+    var enable = true
+    var currency = "money"
+    var singular = "money"
+    var plural = "money"
 }
 
 object MessagesConfig {

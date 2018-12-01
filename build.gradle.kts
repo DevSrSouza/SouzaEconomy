@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -26,6 +27,10 @@ repositories {
         name = "exposed"
         url = uri("https://dl.bintray.com/kotlin/exposed")
     }
+    maven {
+        name = "vault"
+        url = uri("http://nexus.hc.to/content/repositories/pub_releases")
+    }
 }
 
 dependencies {
@@ -33,6 +38,9 @@ dependencies {
 
     compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
     compileOnly("br.com.devsrsouza:kotlinbukkitapi:0.1.0-SNAPSHOT")
+
+    // plugins
+    compileOnly("net.milkbowl.vault:VaultAPI:1.7")
 
     compile("com.zaxxer:HikariCP:3.2.0")
     compile("org.jetbrains.exposed:exposed:0.11.2")
@@ -56,7 +64,10 @@ bukkit {
     website = "https://github.com/DevSrSouza/SouzaEconomy"
     authors = listOf("DevSrSouza")
 
-    softDepend = listOf("KotlinBukkitAPI")
+    depend = listOf("KotlinBukkitAPI")
+    softDepend = listOf("Vault")
+
+    load = BukkitPluginDescription.PluginLoadOrder.STARTUP
 }
 
 val sourcesJar by tasks.creating(Jar::class) {

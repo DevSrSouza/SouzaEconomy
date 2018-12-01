@@ -1,14 +1,23 @@
 package br.com.devsrsouza.souzaeconomy
 
 import br.com.devsrsouza.kotlinbukkitapi.dsl.config.loadAndSetDefault
+import br.com.devsrsouza.kotlinbukkitapi.dsl.event.event
+import br.com.devsrsouza.kotlinbukkitapi.dsl.event.events
+import br.com.devsrsouza.kotlinbukkitapi.dsl.event.registerEvents
+import br.com.devsrsouza.kotlinbukkitapi.plugins.vault.hasVault
 import br.com.devsrsouza.souzaeconomy.currency.Currency
 import br.com.devsrsouza.souzaeconomy.currency.CurrencyConfig
 import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrency
 import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrencyConfig
 import br.com.devsrsouza.souzaeconomy.currency.sql.cached.CachedSQLCurrency
 import br.com.devsrsouza.souzaeconomy.currency.sql.cached.CachedSQLCurrencyConfig
+import br.com.devsrsouza.souzaeconomy.currency.wrapper.VaultCurrencyWrapper
 import br.com.devsrsouza.souzaeconomy.events.PosLoadDefaultTypesEvent
+import br.com.devsrsouza.souzaeconomy.events.PreLoadCurrencyEvent
+import net.milkbowl.vault.economy.Economy
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.plugin.ServicePriority
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 
@@ -50,6 +59,18 @@ class SouzaEconomy : JavaPlugin() {
         }
 
         server.pluginManager.callEvent(PosLoadDefaultTypesEvent(API))
+
+        if(VaultConfig.enable && hasVault) {
+            events {
+                event<PreLoadCurrencyEvent> {
+                    if(currency.name.equals(VaultConfig.currency, true)) {
+                        currency = VaultCurrencyWrapper(currency).also {
+                            Bukkit.getServer().servicesManager.register(Economy::class.java, it.vault, this@SouzaEconomy, ServicePriority.Highest)
+                        }
+                    }
+                }
+            }.registerEvents(this)
+        }
 
         loadCurrencies()
 
