@@ -31,6 +31,10 @@ repositories {
         name = "vault"
         url = uri("http://nexus.hc.to/content/repositories/pub_releases")
     }
+    maven {
+        name = "placeholderapi"
+        url = uri("http://repo.extendedclip.com/content/repositories/placeholderapi/")
+    }
 }
 
 dependencies {
@@ -41,6 +45,7 @@ dependencies {
 
     // plugins
     compileOnly("net.milkbowl.vault:VaultAPI:1.7")
+    compileOnly("me.clip:placeholderapi:2.8.7")
 
     compile("com.zaxxer:HikariCP:3.2.0")
     compile("org.jetbrains.exposed:exposed:0.11.2")
@@ -65,7 +70,7 @@ bukkit {
     authors = listOf("DevSrSouza")
 
     depend = listOf("KotlinBukkitAPI")
-    softDepend = listOf("Vault")
+    softDepend = listOf("Vault", "PlaceholderAPI")
 
     load = BukkitPluginDescription.PluginLoadOrder.STARTUP
 }

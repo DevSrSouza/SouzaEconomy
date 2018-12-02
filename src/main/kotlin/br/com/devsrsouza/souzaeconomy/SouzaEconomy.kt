@@ -4,6 +4,7 @@ import br.com.devsrsouza.kotlinbukkitapi.dsl.config.loadAndSetDefault
 import br.com.devsrsouza.kotlinbukkitapi.dsl.event.event
 import br.com.devsrsouza.kotlinbukkitapi.dsl.event.events
 import br.com.devsrsouza.kotlinbukkitapi.dsl.event.registerEvents
+import br.com.devsrsouza.kotlinbukkitapi.plugins.placeholderapi.hasPlaceholderAPI
 import br.com.devsrsouza.kotlinbukkitapi.plugins.vault.hasVault
 import br.com.devsrsouza.souzaeconomy.currency.Currency
 import br.com.devsrsouza.souzaeconomy.currency.CurrencyConfig
@@ -14,6 +15,7 @@ import br.com.devsrsouza.souzaeconomy.currency.sql.cached.CachedSQLCurrencyConfi
 import br.com.devsrsouza.souzaeconomy.currency.wrapper.VaultCurrencyWrapper
 import br.com.devsrsouza.souzaeconomy.events.PosLoadDefaultTypesEvent
 import br.com.devsrsouza.souzaeconomy.events.PreLoadCurrencyEvent
+import br.com.devsrsouza.souzaeconomy.hooks.PlaceholderAPI
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -75,6 +77,9 @@ class SouzaEconomy : JavaPlugin() {
         loadCurrencies()
 
         commands()
+
+        // PlaceholderAPI hook
+        if (hasPlaceholderAPI) PlaceholderAPI(this).hook()
     }
 
     private fun loadCurrencies() {
