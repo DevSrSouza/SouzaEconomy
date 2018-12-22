@@ -2,6 +2,8 @@ package br.com.devsrsouza.souzaeconomy
 
 object Config {
 
+    var main_currency = "money"
+
     var vault = VaultConfig
 
     var currencies: MutableMap<String, CurrencyByConfig> = mutableMapOf(

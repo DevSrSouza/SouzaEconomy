@@ -3,8 +3,8 @@ package br.com.devsrsouza.souzaeconomy
 import br.com.devsrsouza.kotlinbukkitapi.dsl.command.Executor
 import br.com.devsrsouza.kotlinbukkitapi.dsl.command.command
 import br.com.devsrsouza.kotlinbukkitapi.extensions.text.*
-import br.com.devsrsouza.souzaeconomy.currency.Currency
 import br.com.devsrsouza.souzaeconomy.currency.CurrencyConfig
+import br.com.devsrsouza.souzaeconomy.currency.ICurrency
 import br.com.devsrsouza.souzaeconomy.events.PreLoadCurrencyEvent
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.BaseComponent
@@ -17,10 +17,13 @@ import kotlin.reflect.KClass
 
 class SouzaEconomyAPI {
 
-    internal val currencies: MutableList<Currency<out CurrencyConfig>> = mutableListOf()
-    internal val currenciesTypes: MutableList<CurrencyType<Currency<CurrencyConfig>, CurrencyConfig>> = mutableListOf()
+    lateinit var mainCurrency: ICurrency<out CurrencyConfig>
+        internal set
 
-    fun registerCurrency(currency: Currency<*>, registerCommand: Boolean): Boolean {
+    internal val currencies: MutableList<ICurrency<out CurrencyConfig>> = mutableListOf()
+    internal val currenciesTypes: MutableList<CurrencyType<ICurrency<CurrencyConfig>, CurrencyConfig>> = mutableListOf()
+
+    fun registerCurrency(currency: ICurrency<CurrencyConfig>, registerCommand: Boolean): Boolean {
 
         val event = PreLoadCurrencyEvent(currency, registerCommand)
                 .also { SouzaEconomy.INSTANCE.server.pluginManager.callEvent(it) }
@@ -93,18 +96,18 @@ class SouzaEconomyAPI {
         return true
     }
 
-    fun getCurrency(name: String): Currency<out CurrencyConfig>? {
+    fun getCurrency(name: String): ICurrency<out CurrencyConfig>? {
         return currencies.find { it.name.equals(name, true) }
     }
 
-    inline fun <reified T : Currency<C>, reified C : CurrencyConfig> registerCurrencyType(
+    inline fun <reified T : ICurrency<C>, reified C : CurrencyConfig> registerCurrencyType(
             typeName: String,
             description: String,
             noinline factory: (currencyName: String, config: C) -> T): Boolean {
         return registerCurrencyType(typeName, description, T::class, C::class, factory)
     }
 
-    fun <T : Currency<C>, C : CurrencyConfig> registerCurrencyType(
+    fun <T : ICurrency<C>, C : CurrencyConfig> registerCurrencyType(
             typeName: String,
             description: String,
             type: KClass<T>,
@@ -113,7 +116,7 @@ class SouzaEconomyAPI {
         if (currenciesTypes.find {
                     it.typeName.equals(typeName, true) || it.currencyClass == type
                 } == null) {
-            currenciesTypes.add(CurrencyType(typeName, description, type, configType, factory) as CurrencyType<Currency<CurrencyConfig>, CurrencyConfig>)
+            currenciesTypes.add(CurrencyType(typeName, description, type, configType, factory) as CurrencyType<ICurrency<CurrencyConfig>, CurrencyConfig>)
             return true
         } else return false
     }

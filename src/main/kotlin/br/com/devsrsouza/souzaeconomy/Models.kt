@@ -23,7 +23,7 @@ class SouzaEconomyConfig(val file: File) : YamlConfiguration() {
     }
 }
 
-class CurrencyType<T : Currency<C>, C : CurrencyConfig>(
+class CurrencyType<T : ICurrency<C>, C : CurrencyConfig>(
         val typeName: String,
         val description: String,
         val currencyClass: KClass<T>,

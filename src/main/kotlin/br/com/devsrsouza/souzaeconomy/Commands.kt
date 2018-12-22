@@ -1,4 +1,4 @@
-package br.com.devsrsouza.souzaeconomy
+package br.com.devsrsouza.souzaeconomy.command
 
 import br.com.devsrsouza.kotlinbukkitapi.dsl.command.Executor
 import br.com.devsrsouza.kotlinbukkitapi.dsl.command.KCommand
@@ -6,6 +6,7 @@ import br.com.devsrsouza.kotlinbukkitapi.dsl.command.command
 import br.com.devsrsouza.kotlinbukkitapi.dsl.config.loadAndSetDefault
 import br.com.devsrsouza.kotlinbukkitapi.dsl.config.saveFrom
 import br.com.devsrsouza.kotlinbukkitapi.extensions.text.*
+import br.com.devsrsouza.souzaeconomy.*
 import br.com.devsrsouza.souzaeconomy.utils.*
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.BaseComponent
@@ -14,7 +15,7 @@ import org.bukkit.entity.Player
 import java.io.File
 
 internal fun SouzaEconomy.commands() {
-    command("souzaeconomy") {
+    command("souzaeconomy", plugin = this) {
         aliases = listOf("se")
         permission = "souzaeconomy.cmd"
         permissionMessage = +CommandMessageConfig.no_permission

@@ -44,8 +44,8 @@ dependencies {
     compileOnly("br.com.devsrsouza:kotlinbukkitapi:0.1.0-SNAPSHOT")
 
     // plugins
-    compileOnly("net.milkbowl.vault:VaultAPI:1.7")
-    compileOnly("me.clip:placeholderapi:2.8.7")
+    compileOnly("net.milkbowl.vault:VaultAPI:1.7") // Vault
+    compileOnly("me.clip:placeholderapi:2.8.7") // PlaceholderAPI
 
     compile("com.zaxxer:HikariCP:3.2.0")
     compile("org.jetbrains.exposed:exposed:0.11.2")
