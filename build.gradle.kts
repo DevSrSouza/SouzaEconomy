@@ -41,7 +41,8 @@ dependencies {
     compile(kotlin("stdlib"))
 
     compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
-    compileOnly("br.com.devsrsouza:kotlinbukkitapi:0.1.0-SNAPSHOT")
+    compileOnly("br.com.devsrsouza.kotlinbukkitapi:core:0.1.0-SNAPSHOT")
+    compileOnly("br.com.devsrsouza.kotlinbukkitapi:plugins:0.1.0-SNAPSHOT")
 
     // plugins
     compileOnly("net.milkbowl.vault:VaultAPI:1.7") // Vault

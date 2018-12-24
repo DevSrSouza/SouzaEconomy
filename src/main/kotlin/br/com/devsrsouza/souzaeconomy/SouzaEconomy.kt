@@ -1,12 +1,15 @@
 package br.com.devsrsouza.souzaeconomy
 
+import br.com.devsrsouza.kotlinbukkitapi.dsl.config.YamlConfig
 import br.com.devsrsouza.kotlinbukkitapi.dsl.config.loadAndSetDefault
+import br.com.devsrsouza.kotlinbukkitapi.dsl.config.loadTransformerChangeColor
+import br.com.devsrsouza.kotlinbukkitapi.dsl.config.saveTransformerChangeColor
 import br.com.devsrsouza.kotlinbukkitapi.dsl.event.event
 import br.com.devsrsouza.kotlinbukkitapi.dsl.event.events
 import br.com.devsrsouza.kotlinbukkitapi.dsl.event.registerEvents
 import br.com.devsrsouza.kotlinbukkitapi.plugins.placeholderapi.hasPlaceholderAPI
 import br.com.devsrsouza.kotlinbukkitapi.plugins.vault.hasVault
-import br.com.devsrsouza.souzaeconomy.currency.Currency
+import br.com.devsrsouza.souzaeconomy.command.commands
 import br.com.devsrsouza.souzaeconomy.currency.CurrencyConfig
 import br.com.devsrsouza.souzaeconomy.currency.ICurrency
 import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrency
@@ -20,7 +23,6 @@ import br.com.devsrsouza.souzaeconomy.hooks.PlaceholderAPI
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
-import org.bukkit.plugin.InvalidPluginException
 import org.bukkit.plugin.ServicePriority
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
@@ -36,7 +38,7 @@ class SouzaEconomy : JavaPlugin() {
             private set
     }
 
-    lateinit var config: SouzaEconomyConfig
+    lateinit var config: YamlConfig
 
     override fun onLoad() {
         INSTANCE = this
@@ -46,8 +48,10 @@ class SouzaEconomy : JavaPlugin() {
     override fun onEnable() {
         config = File(dataFolder.apply { mkdirs() }, "config.yml")
                 .apply { if (!exists()) createNewFile() }
-                .let { SouzaEconomyConfig(it) }
-                .apply { if (loadAndSetDefault(Config::class) > 0) save() }
+                .let { YamlConfig(it) }
+                .apply { if (loadAndSetDefault(Config::class,
+                                saveTransformer = { saveTransformerChangeColor(it) },
+                                loadTransformer = { loadTransformerChangeColor(it) }) > 0) save() }
 
         /**
          * loading default types
@@ -109,7 +113,7 @@ class SouzaEconomy : JavaPlugin() {
                         parentFile.mkdirs()
                         if (!exists()) createNewFile()
                     }
-                    .let { SouzaEconomyConfig(it) }
+                    .let { YamlConfig(it) }
             val configurationCurrency = type.currencyConfigClass.constructors.first().call()
             configurationCurrency.displayname = "${ChatColor.GOLD}${name.capitalize()}"
             file.apply {

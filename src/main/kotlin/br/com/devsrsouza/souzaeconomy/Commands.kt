@@ -1,170 +1,123 @@
 package br.com.devsrsouza.souzaeconomy.command
 
-import br.com.devsrsouza.kotlinbukkitapi.dsl.command.Executor
-import br.com.devsrsouza.kotlinbukkitapi.dsl.command.KCommand
-import br.com.devsrsouza.kotlinbukkitapi.dsl.command.command
+import br.com.devsrsouza.kotlinbukkitapi.dsl.command.*
+import br.com.devsrsouza.kotlinbukkitapi.dsl.command.arguments.*
+import br.com.devsrsouza.kotlinbukkitapi.dsl.config.YamlConfig
 import br.com.devsrsouza.kotlinbukkitapi.dsl.config.loadAndSetDefault
 import br.com.devsrsouza.kotlinbukkitapi.dsl.config.saveFrom
 import br.com.devsrsouza.kotlinbukkitapi.extensions.text.*
 import br.com.devsrsouza.souzaeconomy.*
 import br.com.devsrsouza.souzaeconomy.utils.*
-import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.BaseComponent
+import org.bukkit.ChatColor
 import org.bukkit.command.Command
 import org.bukkit.entity.Player
 import java.io.File
 
 internal fun SouzaEconomy.commands() {
-    command("souzaeconomy", plugin = this) {
-        aliases = listOf("se")
+    command("souzaeconomy", "se", plugin = this) {
         permission = "souzaeconomy.cmd"
-        permissionMessage = +CommandMessageConfig.no_permission
+        permissionMessage = CommandMessageConfig.no_permission
         description = "SouzaEconomy configuration command"
 
-        command("currency") {
-            aliases = listOf("c")
+        command("currency", "c") {
             permission += ".$name"
             description = CommandsDescriptionsConfig.currency
 
-            command("create") {
-                aliases = listOf("c")
+            command("create", "c") {
                 permission += ".$name"
                 description = CommandsDescriptionsConfig.currency_create
 
                 executor {
-                    if (args.size > 1) {
-                        val name = args[0].takeIf { name ->
-                            SouzaEconomy.API.currencies.find { it.name.equals(name, true) } == null
-                        }
-                        val type = args[1].let { type ->
-                            SouzaEconomy.API.currenciesTypes.find { it.typeName.equals(type, true) }
-                        }
+                    val usageFormat = "/$label [name] [type] [optional: enable command]".color(ChatColor.RED)
 
-                        if (name == null) {
-                            sender.sendMessage(+CommandMessageConfig.already_has_currency)
-                            return@executor
-                        }
-                        if (type == null) {
-                            sender.sendMessage(+CommandMessageConfig.type_not_found)
-                            return@executor
-                        }
+                    val name = currencyOrNull(0, usageFormat)
+                            ?.run { exception(CommandMessageConfig.already_has_currency) }
+                            ?: string(0, usageFormat)
 
-                        val arg2 = args.getOrNull(2)
-                        val enableCommand = arg2?.toBooleanOrNull()
+                    val type = currencyType(1, usageFormat, CommandMessageConfig.type_not_found.asText())
 
-                        if (arg2 != null && enableCommand == null) {
-                            sender.sendMessage(+CommandMessageConfig.enable_command_need_be_boolean)
-                            return@executor
-                        }
+                    val enableCommand = optional { boolean(2, usageFormat, CommandMessageConfig.enable_command_need_be_boolean.asText()) }
 
-                        val configuration = CurrencyByConfig().also {
-                            it.type = type.typeName
-                            if (enableCommand != null)
-                                it.enable_command = enableCommand
-                        }
-
-                        Config.currencies.put(name, configuration)
-
-                        config.saveFrom(Config::class)
-                        config.save()
-
-                        val file = File(dataFolder, "currencies/$name.yml")
-                                .apply {
-                                    parentFile.mkdirs()
-                                    if (!exists()) createNewFile()
-                                }
-                                .let { SouzaEconomyConfig(it) }
-                        file.apply {
-                            if (loadAndSetDefault(type.currencyConfigClass) > 0)
-                                save()
-                        }
-
-                        sender.sendMessage(+"&eConfigs generated on &7plugins/SouzaEconomy/currencies/$name.yml&e.")
-                        sender.sendMessage(+"&eAfter the configure on file, load the currency with &7/souzaeconomy currency load&e.")
-                    } else {
-                        sender.sendMessage("/$label [name] [type] [optional: enable command]")
+                    val configuration = CurrencyByConfig().also {
+                        it.type = type.typeName
+                        if (enableCommand != null)
+                            it.enable_command = enableCommand
                     }
+
+                    Config.currencies.put(name, configuration)
+
+                    config.saveFrom(Config::class)
+                    config.save()
+
+                    val file = File(dataFolder, "currencies/$name.yml")
+                            .apply {
+                                parentFile.mkdirs()
+                                if (!exists()) createNewFile()
+                            }
+                            .let { YamlConfig(it) }
+                    file.apply {
+                        if (loadAndSetDefault(type.currencyConfigClass) > 0)
+                            save()
+                    }
+
+                    sender.sendMessage(+"&eConfigs generated on &7plugins/SouzaEconomy/currencies/$name.yml&e.")
+                    sender.sendMessage(+"&eAfter the configuration on file, load the currency with &7/souzaeconomy currency load&e.")
                 }
             }
 
-            command("load") {
+            command("load", "l") {
                 // [name]
-                aliases = listOf("l")
                 permission += ".$name"
                 description = CommandsDescriptionsConfig.currency_load
 
                 executor {
-                    val name = args.getOrNull(0)
+                    val usageFormat = "/$label [name]".color(ChatColor.RED)
+                    val name = string(0, usageFormat)
 
-                    if (name != null) {
+                    val config = Config.currencies.findEntry { it.key.equals(name, true) }
+                            ?: exception(CommandMessageConfig.load_cant_find_currency)
 
-                        val config = Config.currencies.findEntry { it.key.equals(name, true) }
+                    currencyOrNull(0, usageFormat)?.run {
+                        exception(CommandMessageConfig.currency_already_loaded)
+                    }
 
-                        if (config == null) {
-                            sender.sendMessage(+CommandMessageConfig.load_cant_find_currency)
-                            return@executor
-                        }
-
-                        if (SouzaEconomy.API.currencies.find { it.name.equals(name, true) } != null) {
-                            sender.sendMessage(+CommandMessageConfig.currency_already_loaded)
-                            return@executor
-                        }
-
-                        if (loadCurrency(config.key, config.value)) {
-                            sender.sendMessage(+CommandMessageConfig.currency_loaded)
-                        } else {
-                            sender.sendMessage(+CommandMessageConfig.problem_on_load_currency)
-                        }
-
+                    if (loadCurrency(config.key, config.value)) {
+                        sender.sendMessage(CommandMessageConfig.currency_loaded)
                     } else {
-                        sender.sendMessage("/$label [name]")
+                        sender.sendMessage(CommandMessageConfig.problem_on_load_currency)
                     }
                 }
             }
 
-            command("reload") {
-                aliases = listOf("r")
+            command("reload", "r") {
                 permission += ".$name"
                 description = CommandsDescriptionsConfig.currency_reload
 
                 executor {
-                    val name = args.getOrNull(0)
+                    val usageFormat = "/$label [name]".color(ChatColor.RED)
 
-                    if (name != null) {
-                        val currency = SouzaEconomy.API.currencies.find { it.name.equals(name, true) }
-                        val configuration = Config.currencies.findEntry { it.key.equals(name, true) }
+                    val currency = currency(0, usageFormat, CommandMessageConfig.reload_cant_find_currency_loaded.asText())
 
-                        if (currency == null) {
-                            sender.sendMessage(+CommandMessageConfig.reload_cant_find_currency_loaded)
-                            return@executor
-                        }
+                    currency.onDisable()
+                    SouzaEconomy.API.currencies.remove(currency)
 
-                        currency.onDisable()
-                        SouzaEconomy.API.currencies.remove(currency)
+                    if (config.reload().loadAndSetDefault(Config::class) > 0) {
+                        config.save()
+                    }
 
-                        if (config.reload().loadAndSetDefault(Config::class) > 0) {
-                            config.save()
-                        }
+                    val configuration = Config.currencies.findEntry { it.key.equals(currency.name, true) }
+                            ?: exception(CommandMessageConfig.remove_from_config_and_reload)
 
-                        if (configuration == null) {
-                            sender.sendMessage(+CommandMessageConfig.remove_from_config_and_reload)
-                            return@executor
-                        }
-
-                        if (loadCurrency(configuration.key, configuration.value)) {
-                            sender.sendMessage(+CommandMessageConfig.currency_reloaded)
-                        } else {
-                            sender.sendMessage(+CommandMessageConfig.problem_on_reload_currency)
-                        }
-
+                    if (loadCurrency(configuration.key, configuration.value)) {
+                        sender.sendMessage(CommandMessageConfig.currency_reloaded)
                     } else {
-                        sender.sendMessage("/$label [name]")
+                        sender.sendMessage(CommandMessageConfig.problem_on_reload_currency)
                     }
                 }
             }
 
-            command("typelist") {
-                aliases = listOf("tls")
+            command("typelist", "tls") {
                 permission += ".$name"
                 description = CommandsDescriptionsConfig.currency_typelist
 
@@ -178,8 +131,7 @@ internal fun SouzaEconomy.commands() {
                 }
             }
 
-            command("list") {
-                aliases = listOf("ls")
+            command("list", "ls") {
                 permission += ".$name"
                 description = CommandsDescriptionsConfig.currency_list
 
@@ -199,8 +151,7 @@ internal fun SouzaEconomy.commands() {
             }
         }
 
-        command("report") {
-            aliases = listOf("r")
+        command("report", "r") {
             permission = ".$name"
             description = CommandsDescriptionsConfig.report
 
