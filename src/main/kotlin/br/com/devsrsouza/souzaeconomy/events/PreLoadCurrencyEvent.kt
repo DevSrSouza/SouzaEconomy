@@ -5,7 +5,7 @@ import br.com.devsrsouza.souzaeconomy.currency.ICurrency
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
-class PreLoadCurrencyEvent(var currency: ICurrency<CurrencyConfig>, var registerCommand: Boolean) : Event() {
+class PreLoadCurrencyEvent(var currency: ICurrency<out CurrencyConfig>, var registerCommand: Boolean) : Event() {
 
     companion object {
         @JvmField val handlers = HandlerList()

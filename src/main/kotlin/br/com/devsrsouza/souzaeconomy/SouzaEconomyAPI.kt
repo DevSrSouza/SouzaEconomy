@@ -5,6 +5,8 @@ import br.com.devsrsouza.kotlinbukkitapi.dsl.command.command
 import br.com.devsrsouza.kotlinbukkitapi.extensions.text.*
 import br.com.devsrsouza.souzaeconomy.currency.CurrencyConfig
 import br.com.devsrsouza.souzaeconomy.currency.ICurrency
+import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrency
+import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrencyConfig
 import br.com.devsrsouza.souzaeconomy.events.PreLoadCurrencyEvent
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.BaseComponent
@@ -23,7 +25,7 @@ class SouzaEconomyAPI {
     internal val currencies: MutableList<ICurrency<out CurrencyConfig>> = mutableListOf()
     internal val currenciesTypes: MutableList<CurrencyType<ICurrency<CurrencyConfig>, CurrencyConfig>> = mutableListOf()
 
-    fun registerCurrency(currency: ICurrency<CurrencyConfig>, registerCommand: Boolean): Boolean {
+    fun registerCurrency(currency: ICurrency<out CurrencyConfig>, registerCommand: Boolean): Boolean {
 
         val event = PreLoadCurrencyEvent(currency, registerCommand)
                 .also { SouzaEconomy.INSTANCE.server.pluginManager.callEvent(it) }

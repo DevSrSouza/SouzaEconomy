@@ -9,7 +9,7 @@ import net.milkbowl.vault.economy.EconomyResponse
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 
-class VaultCurrencyWrapper(private val base: ICurrency<CurrencyConfig>) : ICurrency<CurrencyConfig> by base {
+class VaultCurrencyWrapper(private val base: ICurrency<out CurrencyConfig>) : ICurrency<CurrencyConfig> by base as ICurrency<CurrencyConfig> {
 
     val vault = VaultEconomy()
 
