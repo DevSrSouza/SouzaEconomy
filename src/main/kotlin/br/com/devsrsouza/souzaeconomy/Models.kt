@@ -39,4 +39,6 @@ class Transaction(val amount: Long, val currency: ICurrency<*>) {
     operator fun plus(x: Int) = Transaction(amount + x, currency)
 
     fun revenue(percent: Int) = Transaction(amount * ((percent.toDouble() * 0.01) + 1).toLong(), currency)
+
+    override fun toString() = "${currency.name};$amount"
 }
