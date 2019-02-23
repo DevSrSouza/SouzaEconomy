@@ -7,6 +7,7 @@ import br.com.devsrsouza.kotlinbukkitapi.dsl.config.saveTransformerChangeColor
 import br.com.devsrsouza.kotlinbukkitapi.dsl.event.event
 import br.com.devsrsouza.kotlinbukkitapi.dsl.event.events
 import br.com.devsrsouza.kotlinbukkitapi.dsl.event.registerEvents
+import br.com.devsrsouza.kotlinbukkitapi.extensions.plugin.info
 import br.com.devsrsouza.kotlinbukkitapi.plugins.placeholderapi.hasPlaceholderAPI
 import br.com.devsrsouza.kotlinbukkitapi.plugins.vault.hasVault
 import br.com.devsrsouza.souzaeconomy.command.commands
@@ -100,6 +101,7 @@ class SouzaEconomy : JavaPlugin() {
 
     private fun loadCurrencies() {
         for ((name, config) in Config.currencies) {
+            info("Loading the currency $name")
             loadCurrency(name, config)
         }
     }

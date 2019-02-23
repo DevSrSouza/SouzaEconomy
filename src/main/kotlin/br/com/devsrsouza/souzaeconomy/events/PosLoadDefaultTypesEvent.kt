@@ -6,9 +6,7 @@ import org.bukkit.event.HandlerList
 
 class PosLoadDefaultTypesEvent(val api: SouzaEconomyAPI) : Event() {
 
-    companion object {
-        @JvmField val handlers = HandlerList()
-    }
+    companion object { @JvmStatic val handlerList = HandlerList() }
 
-    override fun getHandlers(): HandlerList = PosLoadDefaultTypesEvent.handlers
+    override fun getHandlers(): HandlerList = handlerList
 }
