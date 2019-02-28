@@ -13,6 +13,8 @@ import br.com.devsrsouza.kotlinbukkitapi.plugins.vault.hasVault
 import br.com.devsrsouza.souzaeconomy.command.commands
 import br.com.devsrsouza.souzaeconomy.currency.CurrencyConfig
 import br.com.devsrsouza.souzaeconomy.currency.ICurrency
+import br.com.devsrsouza.souzaeconomy.currency.nosql.redis.RedisCurrency
+import br.com.devsrsouza.souzaeconomy.currency.nosql.redis.RedisCurrencyConfig
 import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrency
 import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrencyConfig
 import br.com.devsrsouza.souzaeconomy.currency.sql.cached.CachedSQLCurrency
@@ -65,6 +67,11 @@ class SouzaEconomy : JavaPlugin() {
         API.registerCurrencyType<CachedSQLCurrency<CachedSQLCurrencyConfig>, CachedSQLCurrencyConfig>("CachedSQL",
                 "Currency based on SQL database with local cache") { name, config ->
             CachedSQLCurrency(name, config)
+        }
+
+        API.registerCurrencyType<RedisCurrency<RedisCurrencyConfig>, RedisCurrencyConfig>("Redis",
+                "Currency based on Redis") { name, config ->
+            RedisCurrency(name, config)
         }
 
         server.pluginManager.callEvent(PosLoadDefaultTypesEvent(API))

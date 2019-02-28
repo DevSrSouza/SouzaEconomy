@@ -50,6 +50,7 @@ dependencies {
 
     compile("com.zaxxer:HikariCP:3.2.0")
     compile("org.jetbrains.exposed:exposed:0.11.2")
+    compile("redis.clients:jedis:2.9.0")
 }
 
 tasks {
