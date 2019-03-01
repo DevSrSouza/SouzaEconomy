@@ -10,6 +10,5 @@ open class CurrencyRedisConfig {
     open var hostname = "localhost"
     open var port: Int = 6379
     open var database = "myserver:economy"
-    open var user = "souzaeconomy"
     open var password = "12345"
 }
