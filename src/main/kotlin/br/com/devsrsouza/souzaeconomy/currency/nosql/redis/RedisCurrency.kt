@@ -24,8 +24,11 @@ class RedisCurrency<C : RedisCurrencyConfig>(name: String, config: C) : Currency
     private val OfflinePlayer.redis get() = "${config.redis.database}:$name:${player.uniqueId.toString().toLowerCase()}"
 
     override fun getMoney(player: OfflinePlayer): Long {
-        val money = jedis.get(player.redis)?.toLongOrNull()
-        return money ?: 0
+        return getMoneyIfHasAccount(player) ?: 0
+    }
+
+    fun getMoneyIfHasAccount(player: OfflinePlayer): Long? {
+        return jedis.get(player.redis)?.toLongOrNull()
     }
 
     override fun setMoney(player: OfflinePlayer, amount: Long): Long {
@@ -46,7 +49,7 @@ class RedisCurrency<C : RedisCurrencyConfig>(name: String, config: C) : Currency
     }
 
     override fun hasAccount(player: OfflinePlayer): Boolean {
-        return jedis.get(player.redis) != null
+        return getMoneyIfHasAccount(player) != null
     }
 
     override fun getTop(range: IntRange): Map<UUID, Long> {

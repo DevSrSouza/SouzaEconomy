@@ -5,7 +5,7 @@ import br.com.devsrsouza.souzaeconomy.Transaction
 import org.bukkit.OfflinePlayer
 import java.util.*
 
-interface ICurrency<C : CurrencyConfig> {
+interface ICurrency<C : ICurrencyConfig> {
 
     val name: String
     val config: C

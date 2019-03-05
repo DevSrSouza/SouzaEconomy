@@ -2,10 +2,16 @@ package br.com.devsrsouza.souzaeconomy.currency
 
 import br.com.devsrsouza.kotlinbukkitapi.extensions.text.unaryPlus
 
-open class CurrencyConfig {
-    open var displayname = "Currency"
-    open var commands = CurrencyCommandsConfig()
-    open var messages = CurrencyMessageConfig()
+interface ICurrencyConfig {
+    var displayname: String
+    var commands: CurrencyCommandsConfig
+    var messages: CurrencyMessageConfig
+}
+
+open class CurrencyConfig : ICurrencyConfig {
+    override var displayname = "Currency"
+    override var commands = CurrencyCommandsConfig()
+    override var messages = CurrencyMessageConfig()
 }
 
 open class CurrencyMessageConfig {

@@ -2,14 +2,14 @@
 package br.com.devsrsouza.souzaeconomy.currency.wrapper
 
 import br.com.devsrsouza.souzaeconomy.VaultConfig
-import br.com.devsrsouza.souzaeconomy.currency.CurrencyConfig
 import br.com.devsrsouza.souzaeconomy.currency.ICurrency
+import br.com.devsrsouza.souzaeconomy.currency.ICurrencyConfig
 import net.milkbowl.vault.economy.Economy
 import net.milkbowl.vault.economy.EconomyResponse
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 
-class VaultCurrencyWrapper(private val base: ICurrency<out CurrencyConfig>) : ICurrency<CurrencyConfig> by base as ICurrency<CurrencyConfig> {
+class VaultCurrencyWrapper(private val base: ICurrency<out ICurrencyConfig>) : ICurrency<ICurrencyConfig> by base as ICurrency<ICurrencyConfig> {
 
     val vault = VaultEconomy()
 

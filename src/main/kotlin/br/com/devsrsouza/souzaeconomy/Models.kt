@@ -1,11 +1,11 @@
 package br.com.devsrsouza.souzaeconomy
 
-import br.com.devsrsouza.souzaeconomy.currency.CurrencyConfig
 import br.com.devsrsouza.souzaeconomy.currency.ICurrency
+import br.com.devsrsouza.souzaeconomy.currency.ICurrencyConfig
 import org.bukkit.OfflinePlayer
 import kotlin.reflect.KClass
 
-class CurrencyType<T : ICurrency<C>, C : CurrencyConfig>(
+class CurrencyType<T : ICurrency<C>, C : ICurrencyConfig>(
         val typeName: String,
         val description: String,
         val currencyClass: KClass<T>,

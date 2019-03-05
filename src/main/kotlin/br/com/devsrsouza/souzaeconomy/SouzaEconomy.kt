@@ -11,8 +11,8 @@ import br.com.devsrsouza.kotlinbukkitapi.extensions.plugin.info
 import br.com.devsrsouza.kotlinbukkitapi.plugins.placeholderapi.hasPlaceholderAPI
 import br.com.devsrsouza.kotlinbukkitapi.plugins.vault.hasVault
 import br.com.devsrsouza.souzaeconomy.command.commands
-import br.com.devsrsouza.souzaeconomy.currency.CurrencyConfig
 import br.com.devsrsouza.souzaeconomy.currency.ICurrency
+import br.com.devsrsouza.souzaeconomy.currency.ICurrencyConfig
 import br.com.devsrsouza.souzaeconomy.currency.nosql.redis.RedisCurrency
 import br.com.devsrsouza.souzaeconomy.currency.nosql.redis.RedisCurrencyConfig
 import br.com.devsrsouza.souzaeconomy.currency.sql.SQLCurrency
@@ -114,7 +114,7 @@ class SouzaEconomy : JavaPlugin() {
     }
 
     internal fun loadCurrency(name: String, config: CurrencyByConfig): Boolean {
-        val type: CurrencyType<ICurrency<CurrencyConfig>, CurrencyConfig>? = API.currenciesTypes
+        val type: CurrencyType<ICurrency<ICurrencyConfig>, ICurrencyConfig>? = API.currenciesTypes
                 .find { it.typeName.equals(config.type, true) }
         if (type != null) {
             val file = File(dataFolder, "currencies/$name.yml")
@@ -130,7 +130,7 @@ class SouzaEconomy : JavaPlugin() {
                     save()
             }
             try {
-                val currency: ICurrency<CurrencyConfig> = type.factory(name, configurationCurrency)
+                val currency: ICurrency<ICurrencyConfig> = type.factory(name, configurationCurrency)
                 API.registerCurrency(currency, config.enable_command)
                 logger.info("Currency ${currency.name} loaded.")
                 return true
